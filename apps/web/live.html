@@ -63,13 +63,22 @@
       <button data-sc="calme" class="on">Sujet calme</button>
       <button data-sc="tension">Tension croissante</button>
       <button data-sc="faible">Flux faible (caméra loin)</button>
-      <button id="camBtn">Ma webcam</button>
+      <button id="camBtn">📷 Ouvrir ma caméra</button>
     </div>
+    <p class="note" id="camSteps">Caméra : 1) ouvre le lien de la page dans ton navigateur (Safari/Chrome) · 2) touche « Ouvrir ma caméra » · 3) touche « Autoriser » quand le navigateur demande. Ton image reste sur ton appareil.</p>
     <div id="feed">
       <div id="face"><div class="eye" id="eL"></div><div class="eye" id="eR"></div><div id="mouth"></div></div>
       <div id="scan"></div>
     </div>
-    <video id="vid" autoplay playsinline muted></video>
+    <div id="vidWrap" style="position:relative; display:none">
+      <video id="vid" autoplay playsinline muted style="display:block"></video>
+      <div id="overlay" style="position:absolute; top:10px; left:10px; background:rgba(6,12,20,.78); border:1px solid var(--line); border-radius:12px; padding:10px 14px; backdrop-filter:blur(3px)">
+        <div style="font-size:34px; font-weight:800; line-height:1"><span id="ovPct">–</span><small style="font-size:16px; color:var(--dim)">%</small></div>
+        <div style="font-size:12px; color:var(--dim); letter-spacing:.14em">INDICE DE TENSION</div>
+        <div style="font-size:13px; margin-top:4px">Confiance : <b id="ovConf" style="color:var(--cyan)">–</b></div>
+        <div style="font-size:13px">Humeur (mouvement) : <b id="ovMood">–</b></div>
+      </div>
+    </div>
     <div id="gate" class="ok" style="margin-top:12px">Porte qualité : en attente…</div>
     <canvas id="chart" width="640" height="180" style="margin-top:12px"></canvas>
     <p class="note">Démo temps réel sans vidéo fournie : un sujet simulé génère les signaux
@@ -131,7 +140,8 @@ const vid = document.getElementById("vid");
 document.getElementById("camBtn").onclick = async () => {
   try {
     const st = await navigator.mediaDevices.getUserMedia({ video: true });
-    vid.srcObject = st; vid.style.display = "block";
+    vid.srcObject = st;
+    document.getElementById("vidWrap").style.display = "block";
     document.getElementById("feed").style.display = "none";
     webcam = true;
   } catch (e) { alert("Webcam refusée — la démo simulée continue."); }
@@ -175,6 +185,14 @@ function tick() {
   }
   document.getElementById("pct").textContent = r.index;
   document.getElementById("conf").textContent = r.confidence + "%";
+  if (webcam) {
+    document.getElementById("ovPct").textContent = r.index;
+    document.getElementById("ovConf").textContent = r.confidence + "%";
+    const mood = (s.freeze != null && s.freeze > .6) ? "Figé / tendu"
+      : (s.head != null && s.head > .55) ? "Agité"
+      : "Calme, détendu";
+    document.getElementById("ovMood").textContent = mood;
+  }
   document.getElementById("verdict").textContent =
     r.index >= 65 ? "Tension élevée et convergente — à confronter au contenu, jamais un verdict seul." :
     r.index >= 45 ? "Signaux partagés — zone indéterminée." :
