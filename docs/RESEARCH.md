@@ -157,6 +157,83 @@ recherche/UX. **À éviter au lancement** : recrutement, éducation,
 police/justice comme outil de décision, assurance comme motif de refus,
 vidéos de tiers non consentants.
 
+## 8. Inventaire Hugging Face vérifié (5 nov. 2026)
+
+**Fait central : il n'existe aucun modèle « détecteur de mensonge »
+pré-entraîné crédible sur Hugging Face.** Les papiers publient du code
+GitHub et des chiffres, pas de poids réutilisables en production.
+Ce qui existe, ce sont les briques :
+
+| Brique | Ressource vérifiée | Notes |
+|---|---|---|
+| Dataset DOLOS | Pas de dataset HF téléchargeable — seulement une *paper page* (huggingface.co/papers/2303.12745); distribution via NTU, **recherche non commerciale** | 1 675 clips, 213 sujets, jeu TV *Would I Lie To You?*, annotations MUMIN (25 traits visage + 5 voix) |
+| FER (expressions) | `trpakov/vit-face-expression` (ViT, FER-2013, ~71 % sur son jeu de test); `onnxmodelzoo/emotion-ferplus-8` (ONNX, roule en navigateur) | Classent une expression — ni le stress validé, ni le mensonge; scores chutent en vidéo réelle |
+| rPPG (cœur à distance) | `ebowwa/vision-cardio-rppg` (PhysNet; MAE 2,8 bpm après fine-tune UBFC, « wellness/research only »); dataset `kyegorov/mcd_rppg` (600 sujets, 3 600 vidéos, ECG synchronisé — la plus substantielle) | Généralisation éclairage/teint/mouvement non garantie |
+| Regard | L2CS-Net : erreur 3,92° (MPIIGaze) à 10,41° (Gaze360); paper page HF, distribution GitHub | En produit : le regard MediaPipe/OpenFace suffit en statistique agrégée |
+| Micro-expressions | Aucun modèle HF de production trouvé | CASME II : 247 échantillons à 200 fps; SAMM : 159 — une webcam 30 fps manque la majorité des micro-expressions (1/25–1/5 s) structurellement |
+
+**Rétine/pupille** : aucun modèle HF ni papier solide n'établit un signal
+rétinien propre au mensonge. La dilatation pupillaire mesure la charge
+cognitive / l'éveil — la même limite que le polygraphe.
+
+**Tailles réelles des datasets de tromperie** (tout le champ repose sur
+moins de ~5 000 clips étiquetés) : DOLOS 1 675 · Box of Lies 1 049 ·
+Bag-of-Lies 325 (avec EEG et regard) · MU3D 320 · Real-Life Trial 121
+(procès criminels réels). L'argument « milliards d'échantillons » ne
+s'applique pas à cette tâche : en vie réelle, on ne sait presque jamais
+avec certitude que quelqu'un a menti, donc pas de vérité-terrain à
+l'échelle.
+
+## 9. Benchmarks publiés (détection automatique par vidéo)
+
+| Modèle | Dataset | Précision | Lecture |
+|---|---|---|---|
+| PECL (papier DOLOS, ICCV 2023) | DOLOS | **66,84 %** (AUC 64,6 %); visuel seul 61,4 %, audio seul 59,2 %; protocole inter-sexe : 59,0 % | Le résultat de référence des auteurs du dataset |
+| DeceptionX (préprint 2026) | DOLOS / Bag-of-Lies / MU3D | 69,8 % / 61,2 % / 60,6 % | État de l'art récent; l'écart entre datasets montre la fragilité |
+| GPT-5 trimodal zéro-shot (Sensors 2025) | DOLOS | 75,0 % | Un seul papier, un seul dataset — à répliquer |
+| Claims 85–94 % (divers préprints) | mêmes datasets | 85–94 % | **Non établis** : non répliqués, très au-dessus du challenge officiel SVC (CVPR) qui décrit la précision comme « à peine au-dessus du hasard » en conditions difficiles |
+
+Synthèse : **intra-dataset ~60–75 %; cross-dataset ~55–65 %**. À 65 %,
+environ 1 verdict sur 3 est faux — inutilisable comme preuve, utile
+comme aide à l'observation avec consentement et avertissements.
+
+**rPPG, généralisation (étude 2025, MAE FC en bpm)** : DeepPhys 3,1
+(PURE) → 9,1 (conditions nouvelles); POS classique 7,5 → 1,1. Les modèles
+appris gagnent sur benchmarks propres et perdent le plus en transfert;
+les méthodes classiques (POS/CHROM) sont plus stables. Et une FC parfaite
+ne mesure que l'éveil : stress, effort, caféine et mensonge se recouvrent.
+
+**Les 5 raisons pour lesquelles 100 % est impossible** : (1) aucun signal
+n'est unique à la tromperie (consensus APA + NRC 2003); (2) pas de
+vérité-terrain à l'échelle; (3) le jeu TV/labo ≠ la vie réelle (chute en
+transfert mesurée); (4) contre-mesures et variabilité individuelle;
+(5) problème du taux de base — même à 90 %/90 %, sur une population à
+5 % de mensonges, la majorité des alertes sont de faux positifs (argument
+central du NRC contre le dépistage).
+
+⚠️ Piège à éviter dans nos communications : les deux « APA » —
+l'**American Psychological Association** (psychologues : peu de preuves
+que le polygraphe détecte les mensonges) vs l'**American Polygraph
+Association** (l'industrie, qui revendique 89 % dans une méta-analyse
+commandée par elle-même, contestée). Ne jamais citer « 89 % APA » sans
+préciser laquelle.
+
+## 10. Pipeline de l'état de l'art (celui que TruthLens suit)
+
+`vidéo → MediaPipe (navigateur, temps réel) ou LibreFace/OpenFace
+(serveur, upload — licences commerciales à vérifier séparément)
+→ séries [AU FACS, clignements, regard, pose] + rPPG POS (FC)
++ Whisper (texte, pauses, débit) → fusion entraînée sur DOLOS +
+Bag-of-Lies + MU3D → indice de tension/incongruence calibré,
+expliqué signal par signal.`
+
+Formats temps réel — précision honnête : MediaPipe analyse un
+`HTMLVideoElement` (webcam, MP4/WebM, WebRTC). **Le SRT n'est pas lisible
+par un navigateur** : c'est un protocole d'ingestion serveur, il faut un
+relais (SRT → WebRTC/HLS/WebSocket) avant analyse. Le « calque temps
+réel » de l'extension couvre webcam/MP4/HLS lu par le navigateur; le SRT
+passe par le worker serveur (roadmap phase 3).
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
