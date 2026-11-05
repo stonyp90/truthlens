@@ -28,6 +28,8 @@
   .btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
   button { background:#16283c; color:var(--txt); border:1px solid var(--line); border-radius:10px; padding:9px 13px; font-size:14px; cursor:pointer; }
   button.on { background:var(--cyan); color:#04222f; font-weight:700; }
+  #camBtn { background:linear-gradient(135deg,#123043,#0d2136); border:1px solid #2b5878; border-radius:999px; padding:10px 18px; font-size:14.5px; letter-spacing:.02em; box-shadow:0 2px 14px rgba(76,201,240,.18); }
+  #camBtn:hover { border-color:var(--cyan); }
   #gate { font-size:14px; padding:10px 12px; border-radius:10px; background:#0a1220; border:1px solid var(--line); }
   #gate.refuse { border-color:var(--red); color:#ffb3b3; }
   #gate.ok { border-color:var(--green); }
@@ -144,8 +146,25 @@ document.getElementById("camBtn").onclick = async () => {
     document.getElementById("vidWrap").style.display = "block";
     document.getElementById("feed").style.display = "none";
     webcam = true;
-  } catch (e) { alert("Webcam refusée — la démo simulée continue."); }
+  } catch (e) { camError(e); }
 };
+const camMsg = document.createElement("div");
+camMsg.style.cssText = "display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:#2a1215;border:1px solid var(--red);color:#ffb3b3;font-size:13.5px;line-height:1.5";
+document.getElementById("camBtn").insertAdjacentElement("afterend", camMsg);
+function camError(e) {
+  camMsg.style.display = "block";
+  const n = e && e.name ? e.name : "";
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    camMsg.textContent = "Ce navigateur ne donne pas accès à la caméra ici. Ouvre le lien de la page dans Safari ou Chrome directement (pas dans l'aperçu d'une autre app), puis retouche le bouton.";
+  else if (n === "NotAllowedError")
+    camMsg.textContent = "La caméra est refusée pour ce site. Dans la barre d'adresse, touche le cadenas (ou « AA » dans Safari) → réglages du site → Caméra → Autoriser. Sur Mac, vérifie aussi Réglages Système → Confidentialité et sécurité → Caméra → ton navigateur activé. Puis retouche le bouton.";
+  else if (n === "NotFoundError" || n === "OverconstrainedError")
+    camMsg.textContent = "Aucune caméra trouvée par le navigateur. Vérifie qu'une caméra est branchée/disponible, ferme les apps qui l'utilisent (Zoom, FaceTime), puis retouche le bouton.";
+  else if (n === "NotReadableError")
+    camMsg.textContent = "La caméra est occupée par une autre application. Ferme-la (Zoom, FaceTime, Photo Booth), puis retouche le bouton.";
+  else
+    camMsg.textContent = "La caméra n'a pas démarré (" + (n || "erreur inconnue") + "). Réessaie; si ça persiste, dis-moi ce message mot pour mot.";
+}
 const off = document.createElement("canvas"); off.width = 64; off.height = 48;
 function webcamSignals() {  // mouvement réel depuis les pixels (diff d'images)
   const c = off.getContext("2d"); c.drawImage(vid, 0, 0, 64, 48);
