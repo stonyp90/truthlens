@@ -234,6 +234,40 @@ relais (SRT → WebRTC/HLS/WebSocket) avant analyse. Le « calque temps
 réel » de l'extension couvre webcam/MP4/HLS lu par le navigateur; le SRT
 passe par le worker serveur (roadmap phase 3).
 
+## 11. Technologies policières et universitaires — recherche approfondie
+
+*Recherche sourcée complète (rapport de 310 lignes, sources primaires :
+National Academies, NIJ, arrêts de cour) — synthèse :*
+
+| Technologie | Qui l'utilise | Précision démontrée | Statut |
+|---|---|---|---|
+| **Polygraphe (CQT)** | polices, GRC (pré-emploi), fédéral US | incident précis : au-dessus du hasard, sous la perfection (NRC 2003, 57 études); dépistage : insuffisant (ex. 10 000 employés/10 espions → ~1 600 innocents accusés pour en attraper 8) | **Inadmissible au criminel au Canada (R. c. Béland, 1987)**; aide à l'enquête seulement; ~50 % des coupables entraînés le battent (contre-mesures) |
+| **CVSA (stress vocal)** | 1 400+ agences US (selon fabricant) | étude terrain NIJ (319 arrêtés, vérité = analyse d'urine) : **~50 % global, 15 % des menteurs**; NRC : « peu ou pas de base scientifique » | échec validé — **exclu de TruthLens** |
+| **EyeDetect (Converus)** | 100+ agences US, né à l'Univ. de l'Utah | 86–88 % **revendiqués**; aucune validation indépendante (études de l'équipe interne/affiliée); chutes à ~50 % rapportées par son dir. scientifique | une seule admission Daubert connue (NM, 2018); DoD/ODNI : pas de substitut au polygraphe pour le vetting fédéral |
+| **Thermique faciale** | DoDPI + Mayo Clinic (recherche) | 83 % sur **n = 20**, crime simulé (Nature, 2002) | jamais déployé ni répliqué à l'échelle |
+| **IRMf** | No Lie MRI / Cephos (semblent défuntes) | 76–90 % labo intra-sujet; contre-mesures : 100 % → 33 % (Ganis 2011) | **exclue par les cours US** (Semrau, 2010 : pas de taux d'erreur réel ni de standard) |
+| **EEG/P300 (Brain Fingerprinting)** | cas isolés (Harrington, Iowa) | revendique 100 %; critique 2013 : 1 seule étude labo relue (20 sujets), terrain = 4 et 6 sujets | le paradigme sous-jacent **CIT-P300 est légitime** (méta 2014 : d* = 1,89 — le plus fort effet du domaine) |
+| **Michigan — Real-Life Trial** | recherche | fusion verbal + gestuel : **60–75 %** (humains ~50–59 %) | corpus de référence (121 clips) |
+| **iBorderCtrl (UE)** | projet Horizon 2020, 4,5 M€ | 75,6 %/73,7 % sur personnes nouvelles, écarts-types 24–34 pts; ~95 % seulement avec fuite train/test | jamais déployé, terminé 2019 |
+
+**Plan de fusion retenu pour TruthLens (le plus défendable)** :
+1. **Contenu verbal vérifiable + entretien cognitif** (approche Vrij :
+   questions inattendues, charge cognitive, vérifiabilité, SUE) — méta :
+   54 % → ~71 %, le gain le plus robuste, aucune machine requise.
+2. **CIT multimodal** quand des détails non publics existent :
+   conductance (d* 1,55) + respiration (1,11) + cœur (0,89), ± P300
+   (1,89) — protège les innocents par construction (un innocent ne
+   réagit pas à un détail qu'il ignore); usage opérationnel au Japon.
+3. **Audio-visuel automatique** (prosodie + visage + texte, fusion
+   apprise) en appoint probabiliste : +5–10 pts, plafond réaliste
+   ~70 % inter-sujets; validation sujet-disjointe et inter-corpus
+   exigée avant tout usage.
+4. **Thermique / rPPG** : expérimental seulement.
+Exclus : VSA, micro-expressions comme preuve.
+Sortie : **probabilité calibrée + zone « indéterminé »**, jamais de
+décision autonome. Attente réaliste : **70–85 % sur incident spécifique**;
+valeur prédictive qui s'effondre en dépistage de masse (taux de base).
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
