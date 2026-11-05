@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TruthLens — Analyse vidéo (indice de tension)</title>
+<title>Tensivue — Analyse vidéo (indice de tension)</title>
 <style>
   :root { color-scheme: dark; --bg:#0b0f14; --panel:#131a22; --accent:#4cc9f0; --warn:#ffb703; --txt:#e8eef4; }
   * { box-sizing: border-box; }
@@ -29,8 +29,9 @@
 </head>
 <body>
 <header>
-  <h1>🔎 TruthLens</h1>
-  <p>Analyse vidéo — <strong>indice de tension / incongruence</strong>, en local dans ton navigateur.</p>
+  <h1>👁 Tensivue</h1>
+  <p>Analyse vidéo — <strong>indice de tension / incongruence</strong>, en local dans ton navigateur.<br>
+  <em style="color:var(--accent)">Mesuré, jamais deviné.</em></p>
 </header>
 <main>
   <section class="panel">
@@ -43,6 +44,24 @@
        <button id="export" disabled style="background:#223140;color:var(--txt)">Exporter le rapport JSON</button></p>
     <canvas id="chart" width="800" height="140"></canvas>
     <p class="note" id="status">En attente d'une vidéo.</p>
+
+    <div style="border-top:1px solid #223140; margin-top:18px; padding-top:14px">
+      <p style="margin:0 0 8px"><strong>🔗 Ou par lien — YouTube et autres</strong>
+        <span class="note" style="background:#3a2f10;color:#ffd43b;border-radius:6px;padding:2px 8px">PRO — dynamique</span></p>
+      <p class="note">Colle le lien d'une vidéo : l'aperçu s'affiche ici même. L'analyse du lien
+      passe par le serveur Tensivue (il récupère la vidéo et l'analyse — 30 min max).
+      Pour l'overlay <em>en direct par-dessus</em> YouTube, c'est l'extension Tensivue qui s'en charge.</p>
+      <p style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="url" id="urlInput" placeholder="https://www.youtube.com/watch?v=…"
+          style="flex:1;min-width:260px;background:#0d1828;color:var(--txt);border:1px solid #24405f;border-radius:10px;padding:11px;font-size:15px">
+        <button id="loadUrl">Afficher l'aperçu</button>
+        <button id="analyzeUrl" style="background:#223140;color:var(--txt)">Analyser le lien (serveur)</button>
+      </p>
+      <div id="embedWrap"></div>
+      <p class="note">Serveur d'analyse : <input type="text" id="apiBase" value="http://localhost:8000"
+        style="background:#0d1828;color:var(--txt);border:1px solid #24405f;border-radius:6px;padding:4px 8px;width:230px">
+        <span id="urlStatus"></span></p>
+    </div>
   </section>
 
   <aside class="panel">
@@ -165,8 +184,63 @@ $("analyze").onclick = async () => {
 $("export").onclick = () => {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: "application/json" }));
-  a.download = "truthlens-rapport.json"; a.click();
+  a.download = "tensivue-rapport.json"; a.click();
 };
+</script>
+<script>
+// --- Analyse par lien (mode Pro, via le serveur) ----------------------------
+(function () {
+  const $ = (id) => document.getElementById(id);
+  function ytId(url) {
+    const m = String(url).match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    return m ? m[1] : null;
+  }
+  $("loadUrl").onclick = () => {
+    const url = $("urlInput").value.trim();
+    const id = ytId(url);
+    if (id) {
+      $("embedWrap").innerHTML =
+        '<iframe width="100%" height="360" style="border:0;border-radius:10px;margin-top:10px" ' +
+        'src="https://www.youtube.com/embed/' + id + '" title="Aperçu YouTube" ' +
+        'allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
+        '<p class="note">Aperçu intégré. Pour l\'overlay en direct par-dessus YouTube : l\'extension Tensivue. ' +
+        'Pour l\'analyse complète du lien : le bouton « Analyser le lien (serveur) ».</p>';
+      $("urlStatus").textContent = "";
+    } else if (url) {
+      $("embedWrap").innerHTML = '<p class="note">Lien non-YouTube : pas d\'aperçu intégré, mais l\'analyse serveur accepte les liens vidéo directs et la plupart des plateformes.</p>';
+    }
+  };
+  $("analyzeUrl").onclick = async () => {
+    const url = $("urlInput").value.trim();
+    if (!url) { $("urlStatus").textContent = "Colle un lien d'abord."; return; }
+    const base = $("apiBase").value.trim().replace(/\/$/, "");
+    $("urlStatus").textContent = "Analyse en cours sur le serveur (récupération + analyse — peut prendre une minute)…";
+    try {
+      const r = await fetch(base + "/api/analyze-url", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.detail || ("HTTP " + r.status));
+      if (data.index === null || data.index === undefined) {
+        $("score").textContent = "—";
+        $("status").textContent = "Lien analysé (« " + (data.videoTitle || url) + " ») — " + (data.disclaimer || "non scorable.");
+        $("urlStatus").textContent = "Porte qualité : refus de scorer (voir le verdict dans le statut).";
+        return;
+      }
+      $("score").textContent = Math.round(data.index);
+      $("scorebar").style.width = Math.round(data.index) + "%";
+      $("confidence").textContent = Math.round((data.confidence || 0) * 100) + " %";
+      $("face").textContent = Math.round((data.faceVisibleRatio || 0) * 100) + " %";
+      $("signals").innerHTML = Object.entries(data.signals || {}).map(([k, v]) =>
+        '<div class="sig"><span>' + k + '</span><strong>' + (v === null ? "n/a" : Math.round(v * 100) + " %") + "</strong></div>").join("");
+      $("status").textContent = "Lien analysé : « " + (data.videoTitle || url) + " » — " + (data.label || "") + ". " + (data.disclaimer || "");
+      $("urlStatus").textContent = "Terminé.";
+    } catch (e) {
+      $("urlStatus").textContent = "Serveur injoignable ou erreur : " + e.message + " (le backend doit tourner — voir backend/ dans le dépôt).";
+    }
+  };
+})();
 </script>
 </body>
 </html>

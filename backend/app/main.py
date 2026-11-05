@@ -32,7 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "packages"))
 from quality import assess_quality  # noqa: E402
 from scoring import freeze_score, fuse_signals, repetition_score  # noqa: E402
 
-app = FastAPI(title="TruthLens API", version="0.1.0")
+app = FastAPI(title="Tensivue API", version="0.2.0")
 
 DISCLAIMER = "Indice de tension/incongruence observable — pas une preuve de mensonge."
 MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "500"))
@@ -116,10 +116,13 @@ async def analyze(file: UploadFile = File(...)) -> dict:
         tmp.write(data)
         tmp_path = tmp.name
     try:
-        motions, face_ratio, duration, info = _motion_series(tmp_path)
+        return _report_from_path(tmp_path)
     finally:
         os.unlink(tmp_path)
 
+
+def _report_from_path(tmp_path: str) -> dict:
+    motions, face_ratio, duration, info = _motion_series(tmp_path)
     if not motions:
         raise HTTPException(422, "Aucun signal exploitable (vidéo trop courte ?)")
 
@@ -159,6 +162,50 @@ async def analyze(file: UploadFile = File(...)) -> dict:
         **fused,
         "disclaimer": DISCLAIMER,
     }
+
+
+class UrlRequest(BaseModel):
+    url: str  # lien YouTube/Vimeo ou fichier vidéo direct
+
+
+@app.post("/api/analyze-url")
+def analyze_url(req: UrlRequest) -> dict:
+    """Analyse à partir d'un lien (mode Pro — dynamique).
+
+    Le serveur récupère la vidéo avec yt-dlp (480p max, 30 min max,
+    250 Mo max), l'analyse avec le même pipeline que /api/analyze,
+    puis efface le fichier. Aucune copie n'est conservée.
+    """
+    import subprocess
+
+    if not req.url.startswith(("https://", "http://")):
+        raise HTTPException(400, "Lien non supporté (https attendu)")
+    with tempfile.TemporaryDirectory() as td:
+        probe = subprocess.run(
+            ["yt-dlp", "--no-playlist", "--dump-single-json", req.url],
+            capture_output=True, text=True, timeout=120,
+        )
+        if probe.returncode != 0:
+            raise HTTPException(422, "Lien illisible ou vidéo indisponible")
+        try:
+            meta = json.loads(probe.stdout)
+        except Exception:
+            raise HTTPException(422, "Métadonnées de la vidéo illisibles")
+        if (meta.get("duration") or 0) > 1800:
+            raise HTTPException(413, "Vidéo trop longue pour l'analyse par lien (max 30 min)")
+        dl = subprocess.run(
+            ["yt-dlp", "--no-playlist", "-f", "bv*[height<=480]/b[height<=480]/b",
+             "--max-filesize", "250M", "-o", os.path.join(td, "video.%(ext)s"), req.url],
+            capture_output=True, text=True, timeout=900,
+        )
+        files = os.listdir(td)
+        if dl.returncode != 0 or not files:
+            raise HTTPException(422, "Téléchargement de la vidéo impossible")
+        report = _report_from_path(os.path.join(td, files[0]))
+        report["videoTitle"] = meta.get("title")
+        report["videoUrl"] = req.url
+        report["mode"] = "pro-lien"
+        return report
 
 
 @app.websocket("/ws/stream")
