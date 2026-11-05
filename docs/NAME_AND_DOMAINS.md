@@ -29,7 +29,27 @@ marque professionnelle reste recommandée avant tout dépôt.
 | veridetect.ai | libre | 82,70 $/an |
 | gettruthlens.com / truthlensapp.com / veridetect.com / truthsignal.* | pris | — |
 
-## Recommandation
+## Décision d'Anthony (5 nov. 02h29) : identité unique — on renomme
+
+La technologie demeure; le projet prend un nom unique. Candidats vérifiés
+(usages web + domaines Porkbun, 5 nov.) :
+
+Éliminés (usages actifs) : Tensight (plateforme IA), Tensora (ML/crypto),
+Veralis (multiples), Signara (produit IA; .com en revente 23 995 $).
+
+**Finalistes — aucun usage notable trouvé, domaines libres au prix standard :**
+
+| Nom | .com | .ca | .ai |
+|---|---|---|---|
+| **Tensivue** | 11,81 $/an | 8,84 $/an | 82,70 $/an |
+| Oeil Vrai (oeilvrai) | 11,81 $/an | 8,84 $/an | — |
+| Vrai Regard (vrairegard) | 11,81 $/an | 8,84 $/an | — |
+
+Recommandation : **Tensivue** — mot-valise unique (tension + vue), dit
+exactement le produit (la tension, vue et mesurée), garde le positionnement
+honnête au centre, prononçable FR/EN, et le trio .com/.ca/.ai est libre.
+
+## Recommandation (historique, avant la décision de renommage)
 
 Si le nom est conservé : **truthlens.ca** est le seul achat sensé (prix
 minimal, juridiction CA). Mais le .ca ne règle pas le fond : la confusion
