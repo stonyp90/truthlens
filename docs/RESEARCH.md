@@ -268,6 +268,67 @@ Sortie : **probabilité calibrée + zone « indéterminé »**, jamais de
 décision autonome. Attente réaliste : **70–85 % sur incident spécifique**;
 valeur prédictive qui s'effondre en dépistage de masse (taux de base).
 
+## 12. Frontière 2024–2026 — et comment la battre
+
+*Recherche stricte 2024–2026 (défis officiels lus en texte primaire ;
+réserves signalées sur les préprints).*
+
+**Défis officiels (les seuls chiffres comparables)** :
+- **SVC 2025** (ACM MM, 21 équipes, cross-domain) : vainqueur 62,44 %
+  ACC / 43,89 % F1; 2e (MMPDA, adaptation progressive multi-source) :
+  60,43 % / 56,99 % F1.
+- **SVC 2026** (CVPRW, 22 équipes, DOLOS protocole I) : vainqueur
+  71,35 % ACC / 63,90 % F1 — méthode : pont descripteurs AU/affect →
+  langage naturel + LLM; les 2e/3e sont des classifieurs dégénérés
+  (F1 de 7,69 % et 11,31 %) : le champ est fragile, pas saturé.
+- Cross-dataset 2024 : 58,58 % (single-to-single), 59,69 % (MM-IDGM).
+- MLLM zéro-shot : GPT-4o 59,51 %, Gemini 3 Pro 62,13 %, Qwen-VL-Max
+  54,32 % sur DOLOS. DeceptionX fine-tuné (7B) : 70,12 % DOLOS,
+  61,41 % Bag-of-Lies, 60,58 % MU3D.
+- ⚠️ **Correction** : le « GPT-5 zéro-shot 75 % » (Sensors 2025) est
+  contredit par les évaluations systématiques (50–62 %); protocole non
+  détaillé, non comparable. Même réserve pour ThinkDeception (73,76 %
+  revendiqués, disjonction des splits non vérifiable) et les claims
+  85–94 % : l'étalement des chiffres publiés vient de protocoles
+  incompatibles et de fuites de sujets, pas d'un progrès réel.
+- **Sueur par caméra RGB : aucun travail revu par les pairs 2024–2026
+  trouvé.** La frontière sudomoteur est thermique (proxy type-EDA
+  thermique, 2026; température du nez sensible au type de tromperie,
+  Sci Rep 2025 — mais une étude 2024 montre que la véracité seule ne
+  module pas la température faciale). Notre signal « brillance
+  spéculaire » reste donc classé expérimental, à valider nous-mêmes.
+- rPPG : excellent en intra-dataset (MAE 0,27 sur PURE) mais
+  effondrement cross-domaine confirmé en 2026 (meilleur MAE 10,61,
+  r = 0,26 sur domaine inédit).
+- Marché 2024–2026 : l'argent va à la détection de **deepfakes**
+  (Clarity, 16 M$ seed 2024, rachetée par Deel; GetReal, 17,5 M$
+  série A 2025) — **aucun financement trouvé pour un score de
+  « mensonge comportemental »** : le créneau produit est libre, à
+  condition de rester dans le positionnement indice/coaching.
+
+**Les 5 faiblesses de l'état de l'art → nos réponses (déjà au repo ou
+à la roadmap)** :
+1. Effondrement cross-dataset → adaptation progressive multi-source
+   (CORAL/MMD/GRL, MMPDA) + pont descripteurs → langage + LLM.
+2. Fuite de sujets → protocole **sujet-disjoint publié** +
+   leave-one-dataset-out + ré-évaluation indépendante.
+3. Pas de baseline individuelle → questions de contrôle + z-scores
+   intra-sujet (déjà notre principe n° 1).
+4. Aucune calibration (seuil 0,5 partout; F1 de 7,69 % en SVC 2026) →
+   calibration par domaine + **prédiction conforme avec abstention**
+   (notre zone « indéterminé ») + adaptation au test.
+5. Pas de porte qualité + verbal non vérifié → notre **porte pixels**
+   (déjà livrée) + module LLM de cohérence factuelle intra-entretien
+   (faits vérifiables seulement, pas de chaîne de pensée libre).
+
+**Scores cibles officiels de TruthLens (à publier, protocole gelé)** :
+- DOLOS sujet-disjoint : **≥ 75 % ACC / ≥ 75 % F1 / AUC ≥ 0,82**
+- Cross-dataset inédit (Box of Lies, Real-Life Trial) : **≥ 65 % ACC /
+  ≥ 60 % F1**; leave-one-dataset-out ≥ 65 %
+- Écart entre sous-groupes ≤ 5 pts; erreur de calibration ECE ≤ 0,05;
+  couverture conforme 90 % ± 2; abstention ≤ 20 % avec ≥ 80 % de
+  précision sur les cas retenus.
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)

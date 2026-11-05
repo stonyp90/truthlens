@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tensivue — Temps réel</title>
+<style>
+  :root { --bg:#090d13; --panel:#101823; --line:#1e2c3d; --txt:#e8eef4; --dim:#aabecd; --cyan:#4cc9f0; --amber:#ffb703; --red:#ff5d5d; --green:#51cf66; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font-family:system-ui,"Liberation Sans",sans-serif; }
+  header { padding:14px 18px; display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  header h1 { font-size:20px; letter-spacing:.14em; margin:0; }
+  header span { color:var(--dim); font-size:13px; }
+  main { display:grid; grid-template-columns: 340px 1fr; gap:14px; padding:14px; max-width:1200px; margin:0 auto; }
+  @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; }
+  .gauge { text-align:center; }
+  .big { font-size:76px; font-weight:800; line-height:1; }
+  .big small { font-size:30px; color:var(--dim); }
+  .label { color:var(--dim); letter-spacing:.24em; font-size:12px; text-transform:uppercase; }
+  .conf { margin-top:10px; font-size:15px; }
+  .conf b { color:var(--cyan); }
+  .verdict { margin-top:8px; font-size:14px; min-height:20px; }
+  .bar { height:10px; background:#0a1220; border-radius:6px; overflow:hidden; margin:6px 0 12px; }
+  .bar i { display:block; height:100%; background:var(--cyan); width:0%; transition:width .4s; }
+  .sig { display:flex; justify-content:space-between; font-size:13px; color:var(--dim); }
+  .sig b { color:var(--txt); font-variant-numeric:tabular-nums; }
+  .btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  button { background:#16283c; color:var(--txt); border:1px solid var(--line); border-radius:10px; padding:9px 13px; font-size:14px; cursor:pointer; }
+  button.on { background:var(--cyan); color:#04222f; font-weight:700; }
+  #camBtn { background:linear-gradient(135deg,#123043,#0d2136); border:1px solid #2b5878; border-radius:999px; padding:10px 18px; font-size:14.5px; letter-spacing:.02em; box-shadow:0 2px 14px rgba(76,201,240,.18); }
+  #camBtn:hover { border-color:var(--cyan); }
+  #gate { font-size:14px; padding:10px 12px; border-radius:10px; background:#0a1220; border:1px solid var(--line); }
+  #gate.refuse { border-color:var(--red); color:#ffb3b3; }
+  #gate.ok { border-color:var(--green); }
+  canvas { width:100%; height:180px; display:block; }
+  video { width:100%; border-radius:10px; background:#000; display:none; }
+  .note { color:var(--dim); font-size:12.5px; line-height:1.5; }
+  #feed { position:relative; height:180px; border-radius:10px; background:radial-gradient(ellipse at 50% 40%, #16283c, #0a1220); overflow:hidden; }
+  #face { position:absolute; left:50%; top:50%; width:110px; height:140px; margin:-70px 0 0 -55px; border:2px solid #33506e; border-radius:50% 50% 46% 46%; }
+  .eye { position:absolute; top:52px; width:16px; height:9px; border-radius:50%; background:var(--cyan); }
+  #eL { left:26px; } #eR { right:26px; }
+  #mouth { position:absolute; left:50%; bottom:30px; width:38px; height:5px; margin-left:-19px; border-radius:3px; background:#33506e; }
+  #scan { position:absolute; left:0; right:0; height:2px; background:var(--cyan); opacity:.5; animation:scan 2.6s linear infinite; }
+  @keyframes scan { 0%{top:4%} 50%{top:94%} 100%{top:4%} }
+</style>
+</head>
+<body>
+<header>
+  <h1>TENSIVUE</h1><span>Temps réel — indice de tension + confiance, en direct</span>
+</header>
+<main>
+  <section class="card gauge">
+    <div class="label">Indice de tension</div>
+    <div class="big"><span id="pct">–</span><small>%</small></div>
+    <div class="conf">Niveau de confiance : <b id="conf">–</b></div>
+    <div class="verdict" id="verdict">En attente de signaux…</div>
+    <div style="margin-top:14px; text-align:left">
+      <div class="label" style="margin-bottom:6px">Signaux en direct</div>
+      <div id="signals"></div>
+    </div>
+  </section>
+  <section class="card">
+    <div class="btns">
+      <button data-sc="calme" class="on">Sujet calme</button>
+      <button data-sc="tension">Tension croissante</button>
+      <button data-sc="faible">Flux faible (caméra loin)</button>
+      <button id="camBtn">📷 Ouvrir ma caméra</button>
+    </div>
+    <p class="note" id="camSteps">Caméra : 1) ouvre le lien de la page dans ton navigateur (Safari/Chrome) · 2) touche « Ouvrir ma caméra » · 3) touche « Autoriser » quand le navigateur demande. Ton image reste sur ton appareil.</p>
+    <div id="feed">
+      <div id="face"><div class="eye" id="eL"></div><div class="eye" id="eR"></div><div id="mouth"></div></div>
+      <div id="scan"></div>
+    </div>
+    <div id="vidWrap" style="position:relative; display:none">
+      <video id="vid" autoplay playsinline muted style="display:block"></video>
+      <div id="overlay" style="position:absolute; top:10px; left:10px; background:rgba(6,12,20,.78); border:1px solid var(--line); border-radius:12px; padding:10px 14px; backdrop-filter:blur(3px)">
+        <div style="font-size:34px; font-weight:800; line-height:1"><span id="ovPct">–</span><small style="font-size:16px; color:var(--dim)">%</small></div>
+        <div style="font-size:12px; color:var(--dim); letter-spacing:.14em">INDICE DE TENSION</div>
+        <div style="font-size:13px; margin-top:4px">Confiance : <b id="ovConf" style="color:var(--cyan)">–</b></div>
+        <div style="font-size:13px">Humeur (mouvement) : <b id="ovMood">–</b></div>
+      </div>
+    </div>
+    <div id="gate" class="ok" style="margin-top:12px">Porte qualité : en attente…</div>
+    <canvas id="chart" width="640" height="180" style="margin-top:12px"></canvas>
+    <p class="note">Démo temps réel sans vidéo fournie : un sujet simulé génère les signaux
+    (clignements, regard, tête, répétition, tension, figement), le vrai moteur de fusion du
+    produit les score à chaque 500 ms. Le bouton « Ma webcam » branche l'analyse de mouvement
+    sur tes propres pixels. L'indice mesure une <b>tension</b> — pas un verdict de mensonge :
+    la confiance affichée dit à quel point le score mérite d'être cru, et la porte qualité
+    refuse de scorer quand le flux est trop faible.</p>
+  </section>
+</main>
+<script>
+// --- Moteur de fusion (miroir de packages/scoring.js) : entrées 0..1 par signal
+const WEIGHTS = { blink:0.18, gaze:0.16, head:0.14, repetition:0.18, tension:0.20, freeze:0.14 };
+function fuse(s, conf) {
+  let v = 0, w = 0;
+  for (const k in WEIGHTS) if (s[k] != null) { v += s[k] * WEIGHTS[k]; w += WEIGHTS[k]; }
+  if (!w) return null;
+  const idx = Math.round(5 + (v / w) * 90);           // borné 5..95, jamais 0/100
+  return { index: idx, confidence: Math.round(conf * 100) };
+}
+// --- Porte qualité (miroir de packages/quality.js, paliers simplifiés)
+function gate(facePx, fps) {
+  if (facePx < 80)  return { tier:"insufficient", score:false, missing:["regard","clignements","tension faciale","pupille","sueur"] };
+  if (facePx < 120) return { tier:"basic",        score:true,  missing:["pupille","sueur"] };
+  if (facePx < 200) return { tier:"good",         score:true,  missing:["sueur"] };
+  return { tier:"excellent", score:true, missing:[] };
+}
+// --- Sujet simulé : génère des signaux réalistes selon le scénario
+let scenario = "calme", t0 = Date.now();
+const base = { blink:.25, gaze:.22, head:.20, repetition:.18, tension:.24, freeze:.15 };
+function simSignals() {
+  const t = (Date.now() - t0) / 1000, out = {};
+  const target = scenario === "tension"
+    ? { blink:.72, gaze:.66, head:.58, repetition:.78, tension:.82, freeze:.62 }
+    : base;
+  const ramp = scenario === "tension" ? Math.min(1, t / 18) : 1;  // monte en ~18 s
+  for (const k in base) {
+    const goal = base[k] + (target[k] - base[k]) * ramp;
+    out[k] = Math.max(0, Math.min(1, goal + Math.sin(t * .7 + k.length) * .05 + (Math.random() - .5) * .07));
+  }
+  return out;
+}
+const NAMES = { blink:"Clignements", gaze:"Regard", head:"Mouvements de tête", repetition:"Mouvements répétitifs", tension:"Tension faciale", freeze:"Figement" };
+const sigEl = document.getElementById("signals");
+for (const k in NAMES) sigEl.insertAdjacentHTML("beforeend",
+  `<div class="sig"><span>${NAMES[k]}</span><b id="v-${k}">–</b></div><div class="bar"><i id="b-${k}"></i></div>`);
+const hist = [];
+const chart = document.getElementById("chart").getContext("2d");
+function drawChart() {
+  const c = chart, W = 640, H = 180;
+  c.clearRect(0, 0, W, H); c.strokeStyle = "#1e2c3d"; c.beginPath(); c.moveTo(0, H/2); c.lineTo(W, H/2); c.stroke();
+  if (hist.length < 2) return;
+  c.strokeStyle = "#4cc9f0"; c.lineWidth = 2; c.beginPath();
+  hist.forEach((v, i) => { const x = i / 119 * W, y = H - (v / 100) * (H - 16) - 8; i ? c.lineTo(x, y) : c.moveTo(x, y); });
+  c.stroke();
+}
+let webcam = false, prevFrame = null;
+const vid = document.getElementById("vid");
+document.getElementById("camBtn").onclick = async () => {
+  try {
+    const st = await navigator.mediaDevices.getUserMedia({ video: true });
+    vid.srcObject = st;
+    document.getElementById("vidWrap").style.display = "block";
+    document.getElementById("feed").style.display = "none";
+    webcam = true;
+  } catch (e) { camError(e); }
+};
+const camMsg = document.createElement("div");
+camMsg.style.cssText = "display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:#2a1215;border:1px solid var(--red);color:#ffb3b3;font-size:13.5px;line-height:1.5";
+document.getElementById("camBtn").insertAdjacentElement("afterend", camMsg);
+function camError(e) {
+  camMsg.style.display = "block";
+  const n = e && e.name ? e.name : "";
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    camMsg.textContent = "Ce navigateur ne donne pas accès à la caméra ici. Ouvre le lien de la page dans Safari ou Chrome directement (pas dans l'aperçu d'une autre app), puis retouche le bouton.";
+  else if (n === "NotAllowedError")
+    camMsg.textContent = "La caméra est refusée pour ce site. Dans la barre d'adresse, touche le cadenas (ou « AA » dans Safari) → réglages du site → Caméra → Autoriser. Sur Mac, vérifie aussi Réglages Système → Confidentialité et sécurité → Caméra → ton navigateur activé. Puis retouche le bouton.";
+  else if (n === "NotFoundError" || n === "OverconstrainedError")
+    camMsg.textContent = "Aucune caméra trouvée par le navigateur. Vérifie qu'une caméra est branchée/disponible, ferme les apps qui l'utilisent (Zoom, FaceTime), puis retouche le bouton.";
+  else if (n === "NotReadableError")
+    camMsg.textContent = "La caméra est occupée par une autre application. Ferme-la (Zoom, FaceTime, Photo Booth), puis retouche le bouton.";
+  else
+    camMsg.textContent = "La caméra n'a pas démarré (" + (n || "erreur inconnue") + "). Réessaie; si ça persiste, dis-moi ce message mot pour mot.";
+}
+const off = document.createElement("canvas"); off.width = 64; off.height = 48;
+function webcamSignals() {  // mouvement réel depuis les pixels (diff d'images)
+  const c = off.getContext("2d"); c.drawImage(vid, 0, 0, 64, 48);
+  const d = c.getImageData(0, 0, 64, 48).data, cur = [];
+  for (let i = 0; i < d.length; i += 4) cur.push(d[i]);
+  if (!prevFrame) { prevFrame = cur; return null; }
+  let diff = 0; for (let i = 0; i < cur.length; i++) diff += Math.abs(cur[i] - prevFrame[i]);
+  prevFrame = cur;
+  const motion = Math.min(1, diff / cur.length / 28);
+  return { blink:null, gaze:null, head:motion, repetition:motion * .8, tension:null, freeze: Math.max(0, 1 - motion * 3) };
+}
+function tick() {
+  let facePx = 240, fps = 30;
+  if (scenario === "faible" && !webcam) { facePx = 54; fps = 12; }
+  const g = gate(facePx, fps);
+  const gateEl = document.getElementById("gate");
+  const s = webcam && vid.readyState >= 2 ? webcamSignals() : simSignals();
+  if (!g.score) {
+    gateEl.className = "refuse";
+    gateEl.textContent = `Porte qualité : REFUS DE SCORER — visage ${facePx} px, ${fps} ips. Signaux refusés : ${g.missing.join(", ")}. On ne devine pas.`;
+    document.getElementById("pct").textContent = "–";
+    document.getElementById("conf").textContent = "nulle (refus)";
+    document.getElementById("verdict").textContent = "Flux insuffisant : aucun score émis.";
+    return;
+  }
+  gateEl.className = "ok";
+  gateEl.textContent = `Porte qualité : OK (palier ${g.tier}) — visage ${facePx} px, ${fps} ips.${g.missing.length ? " Non mesurés à ce palier : " + g.missing.join(", ") + "." : " Tous les signaux mesurés."}`;
+  if (!s) return;
+  const coverage = Object.values(s).filter(v => v != null).length / 6;
+  const conf = (0.45 + 0.5 * coverage) * (g.tier === "excellent" ? 1 : g.tier === "good" ? .92 : .8);
+  const r = fuse(s, conf);
+  if (!r) return;
+  for (const k in NAMES) {
+    const el = document.getElementById("v-" + k), bar = document.getElementById("b-" + k);
+    if (s[k] == null) { el.textContent = "n/a"; bar.style.width = "0%"; }
+    else { el.textContent = Math.round(s[k] * 100) + "%"; bar.style.width = (s[k] * 100) + "%"; bar.style.background = s[k] > .65 ? "var(--red)" : s[k] > .45 ? "var(--amber)" : "var(--cyan)"; }
+  }
+  document.getElementById("pct").textContent = r.index;
+  document.getElementById("conf").textContent = r.confidence + "%";
+  if (webcam) {
+    document.getElementById("ovPct").textContent = r.index;
+    document.getElementById("ovConf").textContent = r.confidence + "%";
+    const mood = (s.freeze != null && s.freeze > .6) ? "Figé / tendu"
+      : (s.head != null && s.head > .55) ? "Agité"
+      : "Calme, détendu";
+    document.getElementById("ovMood").textContent = mood;
+  }
+  document.getElementById("verdict").textContent =
+    r.index >= 65 ? "Tension élevée et convergente — à confronter au contenu, jamais un verdict seul." :
+    r.index >= 45 ? "Signaux partagés — zone indéterminée." :
+                    "Signaux proches de la baseline du sujet — rien de concluant.";
+  document.getElementById("pct").parentElement.style.color = r.index >= 65 ? "var(--red)" : r.index >= 45 ? "var(--amber)" : "var(--green)";
+  hist.push(r.index); if (hist.length > 120) hist.shift();
+  drawChart();
+}
+document.querySelectorAll("[data-sc]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-sc]").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); scenario = b.dataset.sc; t0 = Date.now(); hist.length = 0;
+});
+setInterval(tick, 500); tick();
+</script>
+</body>
+</html>
