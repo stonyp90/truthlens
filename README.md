@@ -54,6 +54,7 @@ cd backend && python -m pytest tests/ -q
 
 ## Documentation
 - [Science et limites](docs/SCIENCE_AND_LIMITS.md) — ce qui est prouvé, ce qui ne l'est pas
+- [Signaux, porte qualité et flux](docs/SIGNALS_AND_QUALITY.md) — inventaire exhaustif (sueur, tics, pupille…), pixels minimaux par signal, adaptation MP4/HLS/SRT/WebRTC
 - [Recherche — modèles et datasets existants](docs/RESEARCH.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)

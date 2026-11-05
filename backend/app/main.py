@@ -29,6 +29,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile, WebSocket, WebSock
 from pydantic import BaseModel
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "packages"))
+from quality import assess_quality  # noqa: E402
 from scoring import freeze_score, fuse_signals, repetition_score  # noqa: E402
 
 app = FastAPI(title="TruthLens API", version="0.1.0")
@@ -42,8 +43,13 @@ def health() -> dict:
     return {"status": "ok", "service": "truthlens", "disclaimer": DISCLAIMER}
 
 
-def _motion_series(video_path: str, step_frames: int = 5) -> tuple[list[float], float, float]:
-    """Retourne (série de mouvement, ratio visage visible, durée sec)."""
+def _motion_series(video_path: str, step_frames: int = 5) -> tuple[list[float], float, float, dict]:
+    """Retourne (série de mouvement, ratio visage visible, durée sec, infos qualité).
+
+    La largeur du visage est mesurée sur une copie à 320 px de large et
+    remise à l'échelle réelle : c'est elle qui alimente la porte qualité
+    (trop peu de pixels = on ne peut pas savoir).
+    """
     import cv2
 
     cap = cv2.VideoCapture(video_path)
@@ -60,6 +66,10 @@ def _motion_series(video_path: str, step_frames: int = 5) -> tuple[list[float], 
     motions: list[float] = []
     face_frames = 0
     read_frames = 0
+    max_face_w = 0
+    frame_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
+    frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
+    luminance_sum = 0.0
     idx = 0
     while True:
         ok, frame = cap.read()
@@ -73,14 +83,27 @@ def _motion_series(video_path: str, step_frames: int = 5) -> tuple[list[float], 
         if prev_gray is not None:
             motions.append(float(cv2.absdiff(gray, prev_gray).mean()) / 255.0)
         prev_gray = gray
+        luminance_sum += float(gray.mean())
         read_frames += 1
-        if not cascade.empty():
-            faces = cascade.detectMultiScale(gray, 1.2, 4)
+        if not cascade.empty() and frame_w:
+            probe = cv2.resize(frame, (320, max(1, int(320 * frame_h / frame_w))))
+            probe_gray = cv2.cvtColor(probe, cv2.COLOR_BGR2GRAY)
+            faces = cascade.detectMultiScale(probe_gray, 1.2, 4)
             if len(faces):
                 face_frames += 1
+                scale = frame_w / 320.0
+                max_face_w = max(max_face_w, int(max(f[2] for f in faces) * scale))
     cap.release()
     ratio = (face_frames / read_frames) if read_frames else 0.0
-    return motions, ratio, duration
+    info = {
+        "width": frame_w,
+        "height": frame_h,
+        "fps": round(fps, 1),
+        "faceWidthPx": max_face_w,
+        "luminance": round(luminance_sum / read_frames, 1) if read_frames else 0,
+        "isColor": True,
+    }
+    return motions, ratio, duration, info
 
 
 @app.post("/api/analyze")
@@ -93,12 +116,31 @@ async def analyze(file: UploadFile = File(...)) -> dict:
         tmp.write(data)
         tmp_path = tmp.name
     try:
-        motions, face_ratio, duration = _motion_series(tmp_path)
+        motions, face_ratio, duration, info = _motion_series(tmp_path)
     finally:
         os.unlink(tmp_path)
 
     if not motions:
         raise HTTPException(422, "Aucun signal exploitable (vidéo trop courte ?)")
+
+    # Porte qualité : trop peu de pixels sur le visage = on ne peut pas savoir.
+    quality = assess_quality(
+        {
+            "faceWidthPx": info["faceWidthPx"],
+            "fps": info["fps"],
+            "luminance": info["luminance"],
+            "isColor": True,
+        }
+    )
+    if not quality["canScore"]:
+        return {
+            "index": None,
+            "quality": quality,
+            "source": info,
+            "durationSec": round(duration, 1),
+            "faceVisibleRatio": round(face_ratio, 2),
+            "disclaimer": quality["verdict"],
+        }
     mean_motion = float(np.mean(motions))
     signals = {
         "headMovement": min(1.0, mean_motion * 6),
@@ -112,6 +154,8 @@ async def analyze(file: UploadFile = File(...)) -> dict:
     return {
         "durationSec": round(duration, 1),
         "faceVisibleRatio": round(face_ratio, 2),
+        "quality": quality,
+        "source": info,
         **fused,
         "disclaimer": DISCLAIMER,
     }
