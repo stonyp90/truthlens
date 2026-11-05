@@ -181,12 +181,14 @@ def analyze_url(req: UrlRequest) -> dict:
     if not req.url.startswith(("https://", "http://")):
         raise HTTPException(400, "Lien non supporté (https attendu)")
     with tempfile.TemporaryDirectory() as td:
+        ytdlp = [sys.executable, "-m", "yt_dlp"]
         probe = subprocess.run(
-            ["yt-dlp", "--no-playlist", "--dump-single-json", req.url],
+            ytdlp + ["--no-playlist", "--dump-single-json", req.url],
             capture_output=True, text=True, timeout=120,
         )
         if probe.returncode != 0:
-            raise HTTPException(422, "Lien illisible ou vidéo indisponible")
+            tail = (probe.stderr or "").strip().splitlines()
+            raise HTTPException(422, "Lien illisible ou vidéo indisponible" + ((" : " + tail[-1][:180]) if tail else ""))
         try:
             meta = json.loads(probe.stdout)
         except Exception:
@@ -194,7 +196,8 @@ def analyze_url(req: UrlRequest) -> dict:
         if (meta.get("duration") or 0) > 1800:
             raise HTTPException(413, "Vidéo trop longue pour l'analyse par lien (max 30 min)")
         dl = subprocess.run(
-            ["yt-dlp", "--no-playlist", "-f", "bv*[height<=480]/b[height<=480]/b",
+            ytdlp + ["--no-playlist", "-f",
+             "bv*[height<=480][vcodec^=avc1]/bv*[height<=480][vcodec^=vp9]/b[height<=480][vcodec^=avc1]/bv*[height<=480]/b",
              "--max-filesize", "250M", "-o", os.path.join(td, "video.%(ext)s"), req.url],
             capture_output=True, text=True, timeout=900,
         )
