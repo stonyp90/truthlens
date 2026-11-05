@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TruthLens — Analyse vidéo (indice de tension)</title>
+<style>
+  :root { color-scheme: dark; --bg:#0b0f14; --panel:#131a22; --accent:#4cc9f0; --warn:#ffb703; --txt:#e8eef4; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--txt); }
+  header { padding:20px 24px; border-bottom:1px solid #223; display:flex; gap:12px; align-items:baseline; flex-wrap:wrap;}
+  header h1 { margin:0; font-size:26px; } header p { margin:0; opacity:.75; }
+  main { display:grid; grid-template-columns: 1.4fr 1fr; gap:16px; padding:16px 24px; }
+  @media (max-width: 900px){ main{ grid-template-columns:1fr; } }
+  .panel { background:var(--panel); border:1px solid #223140; border-radius:14px; padding:16px; }
+  #drop { border:2px dashed #35506b; border-radius:12px; padding:22px; text-align:center; cursor:pointer; }
+  #drop:hover { border-color:var(--accent); }
+  video { width:100%; border-radius:10px; background:#000; margin-top:12px; }
+  canvas#chart { width:100%; height:140px; background:#0a0e13; border-radius:8px; }
+  .big { font-size:56px; font-weight:800; line-height:1; }
+  .bar { height:10px; background:#223140; border-radius:99px; overflow:hidden; }
+  .bar > div { height:100%; background:linear-gradient(90deg,#4cc9f0,#ffb703,#fb7185); width:0%; transition:width .3s; }
+  .sig { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #1d2836; font-size:15px;}
+  button { background:var(--accent); color:#04222e; border:0; padding:12px 18px; border-radius:10px; font-weight:700; cursor:pointer; font-size:16px;}
+  button:disabled { opacity:.4; cursor:default; }
+  .note { font-size:13px; opacity:.8; line-height:1.5; }
+  .free { color:#7bf1a8; font-weight:700; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🔎 TruthLens</h1>
+  <p>Analyse vidéo — <strong>indice de tension / incongruence</strong>, en local dans ton navigateur.</p>
+</header>
+<main>
+  <section class="panel">
+    <div id="drop">📥 Dépose une vidéo (MP4 / WebM) ou clique pour choisir<br>
+      <span class="note"><span class="free">Gratuit</span> — l'analyse d'upload se fait sur ton appareil, la vidéo ne quitte pas ton navigateur.</span>
+    </div>
+    <input type="file" id="file" accept="video/*" hidden />
+    <video id="video" controls playsinline muted></video>
+    <p><button id="analyze" disabled>▶ Analyser la vidéo</button>
+       <button id="export" disabled style="background:#223140;color:var(--txt)">Exporter le rapport JSON</button></p>
+    <canvas id="chart" width="800" height="140"></canvas>
+    <p class="note" id="status">En attente d'une vidéo.</p>
+  </section>
+
+  <aside class="panel">
+    <p class="note">INDICE DE TENSION (0–100)</p>
+    <div class="big" id="score">—</div>
+    <div class="bar"><div id="scorebar"></div></div>
+    <p class="note">Confiance de mesure : <strong id="confidence">—</strong><br>
+    Visage visible : <strong id="face">—</strong></p>
+    <div id="signals"></div>
+    <p class="note">⚠️ Cet indice mesure des signaux observables (mouvement, figement,
+    répétitions). <strong>Ce n'est pas une preuve de mensonge</strong> : le stress a mille
+    causes. Voir <em>docs/SCIENCE_AND_LIMITS.md</em> dans le dépôt.</p>
+  </aside>
+</main>
+
+<script type="module">
+import { fuseSignals, repetitionScore, freezeScore } from "../../packages/scoring.js";
+
+const $ = (id) => document.getElementById(id);
+const video = $("video"), fileInput = $("file"), drop = $("drop");
+let report = null;
+
+drop.onclick = () => fileInput.click();
+drop.ondragover = (e) => e.preventDefault();
+drop.ondrop = (e) => { e.preventDefault(); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); };
+fileInput.onchange = () => fileInput.files[0] && loadFile(fileInput.files[0]);
+
+function loadFile(f) {
+  video.src = URL.createObjectURL(f);
+  $("analyze").disabled = false;
+  $("status").textContent = `Vidéo chargée : ${f.name} — prête à analyser.`;
+}
+
+// --- Extraction de signaux sans modèle lourd (v0) ---------------------------
+// Mouvement global par différence d'images sur vignettes 64x36.
+// Si l'API FaceDetector du navigateur est dispo, on suit aussi le visage
+// (position/taille -> mouvements de tête, présence). L'étape suivante
+// (voir ROADMAP) branche MediaPipe Face Landmarker pour rétine/iris,
+// clignements (EAR) et blendshapes.
+const thumb = document.createElement("canvas"); thumb.width = 64; thumb.height = 36;
+const tctx = thumb.getContext("2d", { willReadFrequently: true });
+let prevFrame = null;
+
+function frameMotion() {
+  tctx.drawImage(video, 0, 0, 64, 36);
+  const data = tctx.getImageData(0, 0, 64, 36).data;
+  if (!prevFrame) { prevFrame = data; return 0; }
+  let diff = 0;
+  for (let i = 0; i < data.length; i += 16) diff += Math.abs(data[i] - prevFrame[i]);
+  prevFrame = data;
+  return diff / (64 * 36 / 4) / 255; // 0..~1
+}
+
+async function sampleTimeline(stepSec = 0.5) {
+  const duration = video.duration;
+  const series = []; // {t, motion}
+  prevFrame = null;
+  for (let t = 0; t < duration; t += stepSec) {
+    video.currentTime = t;
+    await new Promise((r) => video.addEventListener("seeked", r, { once: true }));
+    series.push({ t, motion: frameMotion() });
+    $("status").textContent = `Analyse… ${Math.round((t / duration) * 100)} %`;
+  }
+  return series;
+}
+
+function drawChart(series, perSecond) {
+  const c = $("chart"), ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.strokeStyle = "#4cc9f0"; ctx.lineWidth = 2; ctx.beginPath();
+  perSecond.forEach((v, i) => {
+    const x = (i / Math.max(1, perSecond.length - 1)) * c.width;
+    const y = c.height - (v / 100) * c.height;
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  ctx.stroke();
+}
+
+$("analyze").onclick = async () => {
+  $("analyze").disabled = true;
+  await video.play().catch(() => {}); video.pause();
+  const series = await sampleTimeline(0.5);
+  const motions = series.map((s) => s.motion);
+
+  // Signaux v0 (mouvement) — les signaux visage arrivent avec MediaPipe (phase 2)
+  const meanMotion = motions.reduce((a, b) => a + b, 0) / Math.max(1, motions.length);
+  const signals = {
+    headMovement: Math.min(1, meanMotion * 6),
+    repetitiveMovement: repetitionScore(motions),
+    freeze: freezeScore(motions.slice(-40), 10),
+    blinkDeviation: null, gazeAversion: null, facialTension: null,
+  };
+  const fused = fuseSignals(signals, { faceVisibleRatio: 0.5, durationSec: video.duration });
+
+  // Indice par seconde (fenêtre glissante sur le mouvement)
+  const perSecond = [];
+  for (let i = 0; i < motions.length; i += 2) {
+    const win = motions.slice(Math.max(0, i - 10), i + 2);
+    const f = fuseSignals({ headMovement: Math.min(1, (win.reduce((a,b)=>a+b,0)/win.length) * 6),
+      repetitiveMovement: repetitionScore(win), freeze: freezeScore(win, 5) },
+      { faceVisibleRatio: 0.5, durationSec: 10 });
+    perSecond.push(f.index ?? 0);
+  }
+  drawChart(series, perSecond);
+
+  $("score").textContent = fused.index ?? "—";
+  $("scorebar").style.width = (fused.index ?? 0) + "%";
+  $("confidence").textContent = Math.round(fused.confidence * 100) + " %";
+  $("face").textContent = "détection visage : phase 2 (MediaPipe)";
+  $("signals").innerHTML = Object.entries(fused.signals)
+    .map(([k, v]) => `<div class="sig"><span>${k}</span><strong>${v}</strong></div>`).join("")
+    || '<p class="note">Aucun signal exploitable (vidéo trop courte ?).</p>';
+  $("status").textContent = "Analyse terminée. " + fused.disclaimer;
+  report = { generatedAt: new Date().toISOString(), durationSec: video.duration,
+             fused, perSecond, disclaimer: fused.disclaimer };
+  $("export").disabled = false;
+  $("analyze").disabled = false;
+};
+
+$("export").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: "application/json" }));
+  a.download = "truthlens-rapport.json"; a.click();
+};
+</script>
+</body>
+</html>

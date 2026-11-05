@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+.venv/
+venv/
+dist/
+*.mp4
+*.webm
+*.mov
+uploads/
+.env
+.DS_Store
