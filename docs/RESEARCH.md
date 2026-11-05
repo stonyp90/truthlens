@@ -1,39 +1,172 @@
-# Recherche — modèles, datasets et état de l'art
+# Recherche — modèles, datasets, concurrents, marché et cadre légal
 
-*Section en cours de consolidation à partir de deux recherches sourcées
-(modèles open source / Hugging Face, et marché / concurrents / cadre légal).
-Les faits ci-dessous sont les points de départ vérifiés du projet.*
+*Consolidé le 5 nov. 2026 à partir de recherches sourcées. Ne constitue pas
+un avis juridique. Une recherche approfondie distincte couvre les
+technologies policières et universitaires (polygraphe, EyeDetect, CVSA,
+IRMf, datasets) — ses résultats s'ajouteront ici.*
 
-## Briques open source retenues pour la v0.2
+## 1. Briques open source retenues
 
 - **MediaPipe Face Landmarker** (Google, Apache-2.0) : 468 landmarks +
-  iris, blendshapes type ARKit — roule en WASM dans le navigateur et
-  via le SDK Python côté serveur. C'est la brique « rétine/regard/
-  clignements/tension » principale.
+  iris, blendshapes type ARKit — WASM navigateur + Python serveur.
+  Brique principale « rétine/regard/clignements/tension ».
 - **OpenCV** (BSD) : pipeline serveur v0 (mouvement, présence visage).
-- **Whisper** (OpenAI, MIT) : transcription + alignement pour la
-  prosodie (phase 3, signal voix secondaire).
+- **Whisper** (OpenAI, MIT) : transcription + prosodie (phase 3).
+- ⚠️ **Licences des modèles d'émotions (Hugging Face)** : la majorité des
+  checkpoints visage populaires sont entraînés sur AffectNet (**licence
+  recherche seulement**) et plusieurs modèles vocaux sont en CC BY-NC-SA
+  (**non commercial**). Un produit payant ne peut pas les reconditionner
+  tels quels — chaque modèle doit passer un audit de licence.
 
-## Datasets avec vérité-terrain (à licencier/vérifier un par un)
+## 2. Datasets avec vérité-terrain
 
 - **DOLOS** : clips d'un jeu télévisé de tromperie, étiquetés
-  vérité/mensonge, avec audio et vidéo — benchmark de référence des
-  papiers récents (précisions publiées ~60–75 % selon protocole).
-- **Bag-of-Lies** : enregistrements contrôlés vérité/mensonge
-  (vidéo, audio, EEG dans la version complète).
-- **MU3D** : base de tromperie multi-démographique (utile biais/équité).
+  vérité/mensonge (audio + vidéo); précisions publiées ~60–75 % selon
+  protocole.
+- **Bag-of-Lies** : enregistrements contrôlés vérité/mensonge.
+- **MU3D** : tromperie multi-démographique (utile pour l'équité).
 - **Real-Life Deception Detection** (Univ. of Michigan) : vidéos de
   procès réels étiquetées par l'issue du dossier.
 
-## Ce que la littérature établit
+## 3. Ce que la science établit (sources dans §6)
 
-- Pas de signal unique du mensonge; les méta-analyses trouvent des
-  indices faibles et inconsistants d'un signal à l'autre.
-- Les systèmes multimodaux (visage + voix + texte) font mieux que
-  chaque modalité seule, en laboratoire, sur protocoles contrôlés.
-- Le polygraphe : précision insuffisante pour le dépistage (National
-  Research Council, 2003); position APA : pas de détecteur fiable.
+- Méta-analyse **Bond & DePaulo (2006)** — 206 études, 24 483 juges :
+  les humains détectent le mensonge à **~54 %**, à peine au-dessus du
+  hasard; l'expérience professionnelle n'améliore pas significativement.
+- **National Research Council (2003)** : la précision du polygraphe est
+  insuffisante pour un dépistage de sécurité à grande échelle.
+- **Barrett et al. (2019)**, revue de >1 000 études : pas de correspondance
+  1-pour-1 entre expression faciale et émotion — et encore moins entre
+  visage et mensonge.
+- Détection par le visage, études indépendantes : **50–70 %** sur le
+  terrain, contre 72–97 % annoncés en laboratoire contrôlé (non
+  généralisables).
+- **Conclusion produit** : vendre un *score de signaux/incohérences à
+  vérifier* avec incertitude affichée — jamais un verdict « ment / ne
+  ment pas », jamais « 100 % » (ce claim exposerait à des accusations de
+  pratiques trompeuses).
 
-*(Inventaire détaillé des modèles Hugging Face — noms, licences,
-popularité — et analyse concurrents/marché : ajoutés dès le retour des
-recherches en cours, avec sources.)*
+## 4. Concurrents
+
+### Converus — EyeDetect / VerifEye (concurrent direct)
+- Lehi, Utah; lancé en 2014, issu de l'University of Utah. Mesure à
+  60 mes./s dilatation pupillaire, clignements et comportement de lecture
+  pendant un test vrai/faux de 15–30 min.
+- Précision **revendiquée : 86–88 %** (dépistage), ~90 % (test dirigé) —
+  études surtout affiliées à l'entreprise; algorithme non auditable.
+- Modèle : station ~4 000 $ US, scoring **50–150 $/test**, prix final
+  200–400 $ (jusqu'à ~800 $ lié à un tribunal), volume pré-emploi
+  25–75 $/test; revendique >1 000 clients dans >60 pays, >100 agences
+  d'application de la loi aux É.-U.; vente via GSA Schedule.
+- Incertitude : on ne sait pas si l'EPPA (qui restreint les polygraphes
+  chez les employeurs privés US) s'applique à EyeDetect.
+
+### HireVue — le précédent à ne pas répéter
+- A noté les expressions faciales des candidats (via Affectiva) pendant
+  des années. **Janvier 2021 : retrait de l'analyse faciale**, après une
+  plainte d'EPIC à la FTC (2019) et les critiques de l'ACLU.
+- Raison officielle : l'analyse visuelle n'ajoutait qu'**~0,25 %** de
+  précision dans la plupart des cas (~4 % rôles face-client). Aujourd'hui :
+  contenu verbal seulement + audits de biais.
+
+### iBorderCtrl — le cas d'école européen
+- Projet UE Horizon 2020 (2016–2019), **4,5 M€**; avatar qui interroge le
+  voyageur et analyse les micro-gestes (« Silent Talker »).
+- **~75–76 % en laboratoire sur 32 acteurs seulement**, ~24 % de faux
+  positifs rapportés ensuite; jamais déployé à grande échelle; dénoncé
+  comme pseudoscience par chercheurs et ONG.
+
+### Analyse d'émotions généraliste (indirects)
+- **Affectiva / Smart Eye** (spin-off MIT Media Lab, acquise ~73,5 M$ US
+  en 2021) : automobile (surveillance du conducteur, obligatoire UE) et
+  tests pub/médias; licences sur devis.
+- **Hume AI** : API de mesure d'expressions; prix publics historiques
+  ~0,083 $/min vidéo+audio, 0,064 $/min audio, 0,002 $/image; forfaits
+  3–500 $/mois (vérifier la disponibilité actuelle avant de bâtir dessus).
+- Constat : les acteurs rentables vendent de l'**émotion/engagement**,
+  pas du « mensonge » — positionnement délibéré pour rester vendables.
+
+## 5. Cadre légal
+
+### Union européenne — AI Act (Règlement 2024/1689)
+- **Interdit depuis le 2 fév. 2025 (art. 5(1)(f))** : inférer les émotions
+  **au travail et en éducation** (sauf médical/sécurité). Sanctions :
+  jusqu'à 35 M€ ou 7 % du CA mondial.
+- **Haut risque (Annexe III)** : recrutement/gestion des travailleurs,
+  application de la loi (« polygraphes ou outils similaires »),
+  frontières, justice. Obligations reportées au 2 déc. 2027 (Digital
+  Omnibus — à revérifier au lancement).
+- **Transparence (art. 50(3))** : informer clairement les personnes
+  exposées à un système de reconnaissance d'émotions. RGPD art. 9 :
+  la biométrie est une catégorie spéciale.
+
+### Québec — Loi 25 et LCCJTI
+- La mesure faciale = renseignement **sensible**, biométrique si elle
+  caractérise la personne.
+- **Art. 44 LCCJTI** : divulgation **préalable à la CAI** + **consentement
+  exprès**; en cas de refus, offrir une alternative non biométrique.
+- **Art. 45** : toute banque de caractéristiques biométriques déclarée à
+  la CAI **≥ 60 jours avant** mise en service; la CAI peut l'interdire
+  (précédent Metro inc., fév. 2025).
+- **Test de nécessité** : objectif légitime + collecte proportionnelle;
+  le consentement ne guérit pas un défaut de nécessité.
+- **ÉFVP obligatoire** avant communication hors Québec (art. 17).
+- Sanctions : jusqu'à 10 M$ CA / 2 % du CA (administratif), 25 M$ / 4 %
+  (pénal).
+
+### Canada — LPRPDE et directives du CPVP (11 août 2025)
+- Biométrie = sensible; but approprié (légitimité, efficacité,
+  proportionnalité, intrusion minimale); consentement exprès en règle
+  générale; préférence pour le traitement **sur l'appareil** (1:1) plutôt
+  qu'une base centralisée (1:N); pas d'extraction secondaire sans nouveau
+  consentement. Précédent Clearview AI : « publiquement accessible » ≠
+  consentement.
+
+### Risques sectoriels
+- **RH** : interdit UE au travail; Illinois AI Video Interview Act et
+  NYC Local Law 144 (avis + audit de biais) aux É.-U.
+- **Justice/police/frontières** : haut risque UE; un score non explicable
+  est pratiquement inutilisable comme preuve.
+- **Assurance/crédit** : jamais de refus fondé sur le seul signal.
+- **Consentement de TOUTES les personnes filmées** — pas seulement de
+  celle qui téléverse : c'est le risque n° 1 du modèle « gratuit si tu
+  uploades »; le produit doit l'encadrer (attestation + détection
+  multi-visages + usage personnel/éditorial).
+
+## 6. Marché (chiffres sourcés, périmètres divergents)
+
+Il n'existe pas de marché isolé crédible « détecteur de mensonge vidéo ».
+Références utilisables :
+
+| Périmètre | Taille | Prévision | Source |
+|---|---|---|---|
+| Emotion AI (logiciel, étroit) | 2,14 G$ US (2024) | 13,40 G$ US (2033), TCAC 22,9 % | Grand View Research 2025 |
+| Emotion Detection & Recognition (large) | 39,63 G$ US (2022) | 136,46 G$ US (2030), TCAC ~16 % | Grand View Research 2025 |
+| Affective Computing (très large) | 96,19 G$ US (2025) | 339,59 G$ US (2031), TCAC 23,4 % | Mordor Intelligence 2026 |
+
+Lecture pour le plan : TAM de référence = le périmètre étroit
+(2,1 G$ en 2024). Le sous-segment adressable au départ (analyse consentie
++ temps réel formation/divertissement) n'est isolé par aucun rapport —
+ne pas inventer de chiffre.
+
+**Segments payants réalistes** : médias/pub (tests d'engagement),
+formation négociation/vente/prise de parole (ses propres vidéos),
+divertissement (participants consentants — c'est là que le modèle
+gratuit-upload → payant-temps-réel a le moins de friction),
+recherche/UX. **À éviter au lancement** : recrutement, éducation,
+police/justice comme outil de décision, assurance comme motif de refus,
+vidéos de tiers non consentants.
+
+## 7. Sources principales
+
+- Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
+- HireVue : aiaaic.org (registre d'incidents IA); sovaassessment.com
+- iBorderCtrl : iborderctrl.no; europeanbusinessreview.eu
+- Science : Bond & DePaulo 2006; National Research Council 2003;
+  Barrett et al. 2019 (via waisman.wisc.edu); mcafeeinstitute.edu
+- AI Act : ai-act-service-desk.ec.europa.eu (Annexe III);
+  casrai.org (art. 5); pitch.law (RH)
+- Loi 25 / biométrie : didit.me; workaxle.com
+- CPVP 2025 : legal500.com; millerthomson.com
+- Marché : grandviewresearch.com; mordorintelligence.com;
+  emergenresearch.com; forasoft.com; dupple.com (Hume)
