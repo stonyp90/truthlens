@@ -32,6 +32,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "packages"))
 from quality import assess_quality  # noqa: E402
 from scoring import freeze_score, fuse_signals, repetition_score  # noqa: E402
 
+try:
+    from app.rppg import estimate_pulse  # noqa: E402
+except ImportError:  # exécution hors package
+    from rppg import estimate_pulse  # noqa: E402
+
 app = FastAPI(title="Tensivue API", version="0.2.0")
 
 DISCLAIMER = "Indice de tension/incongruence observable — pas une preuve de mensonge."
@@ -71,11 +76,27 @@ def _motion_series(video_path: str, step_frames: int = 5) -> tuple[list[float], 
     frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
     luminance_sum = 0.0
     idx = 0
+    last_face = None  # boîte (x, y, w, h) aux coordonnées de la sonde 320 px
+    rgb_series: list[tuple[float, float, float, float]] = []
     while True:
         ok, frame = cap.read()
         if not ok:
             break
         idx += 1
+        # rPPG : couleur moyenne du front toutes les 2 frames, en suivant la
+        # dernière boîte de visage connue (détection Haar à la cadence pas).
+        if idx % 2 == 0 and last_face is not None and frame_w:
+            ph = max(1, int(320 * frame_h / frame_w))
+            probe2 = cv2.resize(frame, (320, ph))
+            x, y, w, h = last_face
+            x2, y2 = min(320, x + w), min(ph, y + h)
+            if x2 > x and y2 > y:
+                roi = probe2[y:y2, x:x2]
+                fh = max(1, int(roi.shape[0] * 0.35))
+                band = roi[:fh, roi.shape[1] // 4 : 3 * roi.shape[1] // 4]
+                if band.size:
+                    b, g, r = band.mean(axis=(0, 1))
+                    rgb_series.append((idx / fps, float(r), float(g), float(b)))
         if idx % step_frames:
             continue
         small = cv2.resize(frame, (64, 36))
@@ -93,6 +114,7 @@ def _motion_series(video_path: str, step_frames: int = 5) -> tuple[list[float], 
                 face_frames += 1
                 scale = frame_w / 320.0
                 max_face_w = max(max_face_w, int(max(f[2] for f in faces) * scale))
+                last_face = tuple(int(v) for v in max(faces, key=lambda f: f[2]))
     cap.release()
     ratio = (face_frames / read_frames) if read_frames else 0.0
     info = {
@@ -102,6 +124,7 @@ def _motion_series(video_path: str, step_frames: int = 5) -> tuple[list[float], 
         "faceWidthPx": max_face_w,
         "luminance": round(luminance_sum / read_frames, 1) if read_frames else 0,
         "isColor": True,
+        "rgbSeries": rgb_series,
     }
     return motions, ratio, duration, info
 
@@ -121,12 +144,15 @@ async def analyze(file: UploadFile = File(...)) -> dict:
         os.unlink(tmp_path)
 
 
-def _report_from_path(tmp_path: str) -> dict:
+def _signals_from_path(tmp_path: str):
+    """Extraction brute : (signaux, couverture, qualité, infos, pouls rPPG).
+
+    Séparé du rapport pour que la boucle d'auto-amélioration
+    (tools/selftune.py) réutilise exactement le même pipeline que le service.
+    """
     motions, face_ratio, duration, info = _motion_series(tmp_path)
     if not motions:
         raise HTTPException(422, "Aucun signal exploitable (vidéo trop courte ?)")
-
-    # Porte qualité : trop peu de pixels sur le visage = on ne peut pas savoir.
     quality = assess_quality(
         {
             "faceWidthPx": info["faceWidthPx"],
@@ -135,16 +161,14 @@ def _report_from_path(tmp_path: str) -> dict:
             "isColor": True,
         }
     )
-    if not quality["canScore"]:
-        return {
-            "index": None,
-            "quality": quality,
-            "source": info,
-            "durationSec": round(duration, 1),
-            "faceVisibleRatio": round(face_ratio, 2),
-            "disclaimer": quality["verdict"],
-        }
     mean_motion = float(np.mean(motions))
+    # rPPG : seulement si le visage a assez de pixels (porte du signal : 120 px).
+    pulse = None
+    if info["faceWidthPx"] >= 120:
+        try:
+            pulse = estimate_pulse(info.get("rgbSeries") or [])
+        except Exception:
+            pulse = None
     signals = {
         "headMovement": min(1.0, mean_motion * 6),
         "repetitiveMovement": repetition_score(motions),
@@ -152,16 +176,38 @@ def _report_from_path(tmp_path: str) -> dict:
         "blinkDeviation": None,
         "gazeAversion": None,
         "facialTension": None,
+        "pulseInstability": (pulse or {}).get("instability"),
     }
-    fused = fuse_signals(signals, {"faceVisibleRatio": face_ratio, "durationSec": duration})
-    return {
+    coverage = {"faceVisibleRatio": face_ratio, "durationSec": duration}
+    return signals, coverage, quality, info, pulse
+
+
+def _report_from_path(tmp_path: str) -> dict:
+    signals, coverage, quality, info, pulse = _signals_from_path(tmp_path)
+    duration = coverage["durationSec"]
+    face_ratio = coverage["faceVisibleRatio"]
+    # Porte qualité : trop peu de pixels sur le visage = on ne peut pas savoir.
+    if not quality["canScore"]:
+        return {
+            "index": None,
+            "quality": quality,
+            "source": {k: v for k, v in info.items() if k != "rgbSeries"},
+            "durationSec": round(duration, 1),
+            "faceVisibleRatio": round(face_ratio, 2),
+            "disclaimer": quality["verdict"],
+        }
+    fused = fuse_signals(signals, coverage)
+    report = {
         "durationSec": round(duration, 1),
         "faceVisibleRatio": round(face_ratio, 2),
         "quality": quality,
-        "source": info,
+        "source": {k: v for k, v in info.items() if k != "rgbSeries"},
         **fused,
         "disclaimer": DISCLAIMER,
     }
+    if pulse:
+        report["rppg"] = pulse
+    return report
 
 
 class UrlRequest(BaseModel):

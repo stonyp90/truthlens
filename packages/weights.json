@@ -1,0 +1,1 @@
+{"source":"défauts initiaux (à recalibrer par tools/selftune.py sur données étiquetées)","threshold":55,"updated":"2026-11-07","version":1,"weights":{"blinkDeviation":0.18,"facialTension":0.2,"freeze":0.16,"gazeAversion":0.16,"headMovement":0.16,"pulseInstability":0.12,"repetitiveMovement":0.14}}

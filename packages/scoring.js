@@ -19,7 +19,19 @@ export const WEIGHTS = {
   repetitiveMovement: 0.14, // autocorrélation des micro-mouvements (tics, tapotements)
   facialTension: 0.20, // blendshapes : sourcils, mâchoire, lèvres pincées
   freeze: 0.16, // suppressions soudaines de mouvement ("figement")
+  pulseInstability: 0.12, // rPPG : pouls à distance instable (backend seulement)
 };
+
+/** Applique des poids externes (ex. packages/weights.json servi au web,
+ * écrit par la boucle d'auto-amélioration tools/selftune.py). */
+export function applyWeights(external) {
+  if (!external) return WEIGHTS;
+  const w = external.weights || external;
+  for (const k of Object.keys(WEIGHTS)) {
+    if (Number.isFinite(w[k])) WEIGHTS[k] = w[k];
+  }
+  return WEIGHTS;
+}
 
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 

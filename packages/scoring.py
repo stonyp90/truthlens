@@ -6,17 +6,37 @@ Voir docs/SCIENCE_AND_LIMITS.md.
 """
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 from typing import Optional
 
-WEIGHTS = {
+DEFAULT_WEIGHTS = {
     "blinkDeviation": 0.18,
     "gazeAversion": 0.16,
     "headMovement": 0.16,
     "repetitiveMovement": 0.14,
     "facialTension": 0.20,
     "freeze": 0.16,
+    "pulseInstability": 0.12,  # rPPG : pic spectral diffus / pouls qui dérive
 }
+
+DEFAULT_THRESHOLD = 55  # indice >= seuil -> prédiction « tension élevée »
+
+
+def _load_weights() -> tuple[dict, int]:
+    """Poids effectifs : packages/weights.json (écrit par tools/selftune.py
+    quand la boucle d'auto-amélioration trouve mieux sur données étiquetées),
+    sinon les défauts ci-dessus."""
+    try:
+        data = json.loads((Path(__file__).parent / "weights.json").read_text(encoding="utf-8"))
+        weights = {**DEFAULT_WEIGHTS, **(data.get("weights") or {})}
+        return weights, int(data.get("threshold", DEFAULT_THRESHOLD))
+    except Exception:
+        return dict(DEFAULT_WEIGHTS), DEFAULT_THRESHOLD
+
+
+WEIGHTS, THRESHOLD = _load_weights()
 
 
 def _clamp01(x: float) -> float:
