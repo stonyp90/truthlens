@@ -329,6 +329,113 @@ réserves signalées sur les préprints).*
   couverture conforme 90 % ± 2; abstention ≤ 20 % avec ≥ 80 % de
   précision sur les cas retenus.
 
+## 13. Veille — 7 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h**, mais
+deux rattrapages importants (manqués par les veilles précédentes) et des
+confirmations rPPG. Vérifié le 7 nov. 2026, 07h40 (heure de Toronto).
+
+### 13.1 Plafond de la détection verbale automatique — méta-analyse (8 oct. 2026)
+- Loconte et al., « A persistent accuracy ceiling in automated verbal
+  deception detection », arXiv:2610.12118 (8 oct. 2026). Méta-analyse de
+  25 ans : 289 rapports, 6 136 modèles, 3 653 modèles méta-analysés dans
+  97 jeux de données.
+- Précision agrégée **74,4 % (IC 95 % : 71,2–77,4 %)** ; la précision
+  dépend de la qualité méthodologique (vérité-terrain vérifiable,
+  équilibre des classes, procédure d'évaluation) plus que de la
+  complexité du modèle — **l'adoption des embeddings et des LLM n'a pas
+  amélioré la performance prédictive**.
+- Seulement **12,46 %** des rapports utilisent des données à
+  vérité-terrain vérifiable ; **23,96 %** seulement sont évalués sur
+  données indépendantes. Conclusion des auteurs : **plafond de 70–75 %,
+  peu susceptible d'être levé par les conventions de recherche
+  actuelles**.
+- Lecture pour Tensivue : notre cible DOLOS ≥ 75 % ACC se situe
+  **au-dessus du plafond méta-analytique** — cible ambitieuse, pas un
+  acquis ; elle exige le protocole sujet-disjoint + validation
+  inter-corpus déjà gelé (§12). Renforce notre positionnement
+  « indice + incertitude », jamais verdict.
+
+### 13.2 WhistleAI — détection sans envoi vidéo (21 juin 2026)
+- Sharma, Saran & Singla (WhistleAI), « Catching Lies Without Sending
+  the Video: Privacy-Preserving Multimodal Deception Detection »,
+  arXiv:2606.22699 (21 juin 2026, préprint non revu par les pairs).
+- Sur Real-life Trial Deception (121 clips) : un digest compact (~250
+  traits interprétables : transcription, émotion, fluidité/rythme,
+  comportement facial par image, prosodie) extrait sur l'appareil
+  atteint **AUC 0,741** avec un petit classifieur (équivalent à
+  Gemini 2.5 Pro sur vidéo complète) ; remis à un LLM frontière,
+  **AUC 0,755 avec Claude Opus 4.8, à 7,8× moins de tokens**, sans
+  qu'aucun média brut ne quitte l'appareil.
+- Point méthodologique fort : les auteurs démontrent que le « 75 % de
+  précision » rapporté dans la littérature est un **artefact de fuite de
+  locuteur** (leave-one-video-out) ; en évaluation **sujet-disjointe**,
+  la précision honnête est de **~65–70 %** — cohérent avec nos §9/§12.
+- ⚠️ **Code annoncé mais inaccessible** : le dépôt cité dans le papier
+  (github.com/WhistleAI/lie_detection_binary) retourne **404 le
+  7 nov. 2026** (vérifié deux fois, navigateur + fetch direct) —
+  dépôt supprimé, renommé ou privé. Non réutilisable en l'état ; à
+  revérifier avant tout usage.
+- Intégrabilité : **aucun signal nouveau** — le digest reprend nos
+  briques déjà prévues (Whisper + MediaPipe + prosodie, phases 2–3).
+  La leçon est architecturale : le digest interprétable sur l'appareil
+  + juge LLM est exactement notre positionnement (traitement local,
+  Loi 25) et valide notre approche. Porte qualité inchangée.
+
+### 13.3 rPPG — confirmations, pas de rupture
+- **FaceHeart (Taïwan)** : investissement de TISI (groupe TIS Intec,
+  Japon) annoncé le **6 nov. 2026** ; rPPG visage (FC + fréquence
+  respiratoire) avec clearances FDA 510(k) ; SDK FaceHeart Vitals +
+  miroir CardioMirror (prix CES 2025). La rPPG caméra devient un
+  produit de santé grand public validé — conforte notre signal rPPG
+  actif, sans changer notre porte qualité (visage ≥ 120 px, ≥ 8 s).
+- **FusionPhys** (MDPI, 2026) : sur UBFC-rPPG sujet-disjoint, le
+  classique **POS reste devant** (MAE FC 1,02 bpm) contre FusionPhys
+  1,38 et DeepPhys 2,60 — confirme notre choix POS (§9) : les méthodes
+  classiques restent les plus stables en transfert.
+- **Finotti et al., Behavior Research Methods 2026** : rPPG web validée
+  contre ECG (ICC 0,96, biais −1,49 bpm, n = 18, webcam Logitech C920,
+  30 ips) — valide la mesure par webcam navigateur, mais n = 18 et
+  **aucun participant à peau foncée** : généralisation non établie,
+  notre exigence d'équité (écart ≤ 5 pts entre sous-groupes) reste
+  entière.
+- **SCOPE/MDFS** (Frontiers in Bioengineering and Biotechnology,
+  2026) : revendique l'état de l'art intra- et cross-dataset sur
+  PURE/UBFC/MMPD — chiffres non vérifiés dans le résumé ; à suivre,
+  pas de changement de pile.
+
+### 13.4 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les dernières
+  48 h. Dernière version connue : EyeDetect 5.1 (fév. 2026, monitoring
+  temps réel) ; revendications 86–88 % inchangées, toujours sans
+  validation indépendante.
+- **Deepfake** (hors champ direct, mais vague de fond) : Google
+  SynthID Detector gratuit depuis le 7 oct. 2026 ; Nvidia Synthetic
+  Video Detector (SIGGRAPH 2026, 92 % sur 1080p non compressée) ;
+  Zoom annonce un détecteur de deepfake en direct pour déc. 2026.
+  L'argent et l'attention restent sur l'authenticité vidéo, pas sur le
+  mensonge comportemental — le créneau Tensivue reste libre (§12).
+
+### 13.5 Passé en revue sans trouvaille
+- arXiv (API, requête « deception detection », tri par date) : les
+  10 derniers dépôts sont dominés par la **déception des LLM**
+  (DecepEval, FIBS, Machine Deception Detector) — hors champ (mensonge
+  d'un modèle, pas d'un humain en vidéo) ; un seul papier vidéo-humain
+  pertinent (WhistleAI, §13.2).
+- **MIDA** (arXiv:2511.16221) : benchmark multi-parties, jeu Werewolf,
+  2 360 dialogues, vérité-terrain vérifiable ; GPT-4o et autres MLLM
+  peinent. Jeu de société multi-joueurs — pas transposable à notre
+  cible (une personne face caméra) ; noté, non intégré.
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge** ; les sorties récentes sont de la détection de deepfakes
+  (Verus-Insight-8B, Venus-DefakerOne2).
+- GitHub : aucun dépôt pertinent nouveau ; un « Cool Vitals » (démo de
+  concours Presage SmartSpectra, index de tromperie 0–100 % par rPPG,
+  usage divertissement déclaré) — pas de preuve, pas intégrable.
+- Linguistique seule : FranklinAsk (RAG, Frontiers in AI 2026) F1
+  0,519 / précision 0,487 sur exercice militaire NCCA — **sous le
+  hasard en précision** ; confirme que le verbal seul ne suffit pas.
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
