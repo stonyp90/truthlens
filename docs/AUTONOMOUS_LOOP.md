@@ -55,7 +55,7 @@ redémarrage du service / au rechargement de la page.
 | Mouvements de tête, répétition, figement | ✅ actif | Différence d'images + suivi de visage |
 | **Pouls à distance (rPPG, POS)** | ✅ actif depuis le 7 nov. 2026 | BPM + instabilité du pouls ; exige visage ≥ 120 px, ≥ 8 s |
 | Clignements (EAR), regard/iris, tension faciale | 🔜 phase 2 | MediaPipe Face Landmarker (468 points, iris) |
-| Pupille / mouvement rétinien | 🔜 candidat veille | Exige visage ≥ 220 px ; la recherche « eye-tracking » (EyeDetect) est suivie |
+| Pupille / mouvement rétinien | 🔜 candidat veille | Exige visage ≥ 220 px ; la recherche « eye-tracking » (EyeDetect) est suivie ; ETRA 2025 (CIT, eye-tracker dédié) : 74 % binaire — appuie le candidat, sans changer la porte qualité |
 | Voix : prosodie, hésitations, contenu vérifiable | 🔜 phase 3 | Whisper + analyse du discours ; recette gagnante SVC 2026 (descripteurs → juge LLM) |
 | Thermique, sueur, respiration | 👀 veille | RGB seulement pour l'instant ; aucun papier revu 2024-2026 solide sur la sueur en RGB |
 | Multi-personnes + diarisation | 📐 dessiné | `docs/MULTI_PERSON_AND_EDGE_CASES.md` |

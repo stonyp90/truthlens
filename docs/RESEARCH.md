@@ -436,6 +436,97 @@ confirmations rPPG. Vérifié le 7 nov. 2026, 07h40 (heure de Toronto).
   0,519 / précision 0,487 sur exercice militaire NCCA — **sous le
   hasard en précision** ; confirme que le verbal seul ne suffit pas.
 
+## 14. Veille — 8 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h**, mais
+deux rattrapages importants (manqués par les veilles précédentes) et une
+confirmation : le Pentagone lui-même exclut le visage et la voix de son
+programme de modernisation du polygraphe. Vérifié le 8 nov. 2026,
+07h40 (heure de Toronto).
+
+### 14.1 Pentagone — programme Polygraph Next / Polygraph+ réduit (5 oct. 2026)
+- **Defense News, 5 oct. 2026** (« Has the Pentagon given up on
+  AI/polygraph analysis of trustworthiness? », relayé le 8 nov. 2026) :
+  la Defense Counterintelligence and Security Agency (DCSA) déclare
+  que les travaux R&D actuels du programme « Modernizing Polygraph »
+  (alias Credibility Assessment Modernization, Polygraph+, Polygraph
+  Next) **n'incluent pas** l'IA générative, les LLM, l'analyse des
+  micro-expressions faciales ni l'évaluation vocale. L'agence dit
+  continuer à surveiller les développements scientifiques pour un
+  usage futur éventuel — sans préciser si l'exclusion est définitive.
+- Budget demandé : **~31 M$ US sur 5 ans** (6,42 M$ en FY2027),
+  **non approuvé par le Congrès** (gouvernement sous résolution de
+  continuité depuis sept. 2026). Partenaires de recherche : ARLIS et
+  Oak Ridge National Laboratory. Prototypes caméra sélectionnés par la
+  Defense Innovation Unit en 2023 : **Presage Technologies** (FC +
+  respiration par caméra RGB) et **Altec Research** (mouvement de
+  tête, température cutanée faciale, activité des pores) — aucun
+  résultat validé publié à ce jour.
+- Lecture pour Tensivue : le DoD lui-même met de côté le visage et
+  la voix dans son programme phare — renforce notre plafond 70–75 %
+  (§13.1) et notre positionnement « indice + incertitude, jamais
+  verdict ». **Aucun signal nouveau à intégrer** ; nos signaux
+  visage/voix restent des indices faibles, pas des preuves. Le
+  créneau produit (analyse consentie, coaching/divertissement) reste
+  libre : l'argent public va à la modernisation du polygraphe
+  classique, pas à un score de mensonge comportemental.
+
+### 14.2 Regard/pupille en CIT — ETRA 2025 (rattrapage)
+- « Eye Movements as Indicators of Deception: A Machine Learning
+  Approach », Symposium on Eye Tracking Research and Applications
+  (ETRA 2025, Tokyo), arXiv:2505.02649 (mai 2025, manqué par les
+  veilles précédentes).
+- Deux datasets de **Concealed Information Test** (CIT) : 87
+  participants (Eyelink 1000, écran + mentonnière) et 36 participants
+  (Pupil Neon, face à un expérimentateur). XGBoost : jusqu'à **74 %
+  en binaire** (Révéler vs Dissimuler), **49 % en 3 classes**
+  (Révéler vs Dissimuler vs Simuler). Traits les plus importants :
+  nombre, durée et amplitude des saccades, taille pupillaire
+  maximale.
+- Lecture : appuie notre candidat « pupille/regard » déjà au tableau
+  (docs/AUTONOMOUS_LOOP.md) — mais en contexte CIT contrôlé avec
+  **eye-tracker dédié**, pas en webcam libre. Ne change ni la porte
+  qualité (visage ≥ 220 px) ni le statut candidat. Cohérent avec le
+  plan de fusion §11 (le CIT multimodal est le paradigme le plus
+  défendable).
+
+### 14.3 Micro-expressions — prototype sans validation (IJARCCE, oct. 2026)
+- « An AI-Powered Lie Detection System Using Facial Micro-Expressions »,
+  IJARCCE vol. 15, n° 10, oct. 2026, DOI 10.17148/IJARCCE.2026.1510134.
+  Prototype (MediaPipe + CNN-LSTM + attention) sur Real-Life Trial
+  (121 clips) ; les auteurs déclarent eux-mêmes que la validation
+  quantitative (accuracy, precision, recall, F1) **reste à faire** —
+  aucune prétention de performance. Revue à faible exigence.
+  Rien d'intégrable ; confirme que la micro-expression comme preuve
+  reste exclue (§11).
+
+### 14.4 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **8 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404**. Code annoncé mais non réutilisable (§13.2).
+
+### 14.5 Passé en revue sans trouvaille
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; les sorties récentes sont de la détection de
+  deepfake audio (**VeriSpoof-Plus**, 4 nov. 2026, EER 2,14 % sur
+  Speech-DF-Arena — voix synthétique, hors champ) et de la détection
+  de prompt-injection (Galvanize 3, 31 oct. 2026).
+- rPPG : **Google AI-PPG-ACC-HTN** (Nature, 5 nov. 2026) détecte
+  l'hypertension au poignet (sensibilité 65,8 %, n = 196) — PPG au
+  poignet, pas rPPG faciale, aucun lien avec la tromperie ; confirme
+  la maturité du signal PPG en général. **BTS-rPPG** (CVPRW 2026,
+  atelier SVC) : modélisation temporelle rPPG, sans lien tromperie.
+- Déception des LLM (hors champ) : **FIBS** (arXiv:2610.12445, 8 oct.
+  2026, AUC 98,8 % sur SHADE-Arena — sondes sur les activations
+  internes d'un modèle) et **Four Bridges** (arXiv:2611.03600, jeu
+  multi-agents) concernent le mensonge des modèles, pas d'un humain
+  en vidéo.
+- FranklinAsk (Frontiers in AI 2026) : déjà couvert §13.5 (F1 0,519 —
+  sous le hasard en précision).
+- EyeDetect / Converus : pas d'annonce nouvelle dans les dernières
+  48 h ; dernière nouveauté connue : EyeDetect 5.3 (correctif Windows,
+  sept. 2026) ; revendications 86–88 % inchangées, toujours sans
+  validation indépendante.
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
