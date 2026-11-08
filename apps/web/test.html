@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tensivue — Test du jour (vrais humains)</title>
+<style>
+  :root { --bg:#0a1220; --panel:#101c30; --ink:#e8f1f8; --dim:#8fb0c9; --cyan:#4cc9f0; --red:#ff6b6b; --green:#51cf66; --amber:#ffd43b; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:22px 20px 6px; max-width:880px; margin:0 auto; }
+  h1 { font-size:24px; margin:0; letter-spacing:.14em; } h1 span { color:var(--cyan); }
+  .sub { color:var(--dim); font-size:14px; margin-top:4px; line-height:1.55; }
+  .sub a, main a { color:var(--cyan); }
+  main { max-width:880px; margin:0 auto; padding:14px 20px 48px; display:grid; gap:14px; }
+  .card { background:var(--panel); border:1px solid #1d3350; border-radius:14px; padding:16px; }
+  .card h2 { margin:0 0 10px; font-size:16px; }
+  video { width:100%; border-radius:10px; background:#000; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  button { background:#16283f; color:var(--ink); border:1px solid #2b4a73; border-radius:10px; padding:9px 14px; font-size:14px; cursor:pointer; }
+  button.primary { background:var(--cyan); color:#04222f; font-weight:700; border-color:var(--cyan); }
+  button:disabled { opacity:.45; cursor:default; }
+  button.truth { border-color:var(--green); } button.lie { border-color:var(--red); }
+  button.sel-truth { background:var(--green); color:#062b12; font-weight:700; }
+  button.sel-lie { background:var(--red); color:#2b0606; font-weight:700; }
+  button.sel-fb { background:#24405f; border-color:var(--cyan); color:#fff; font-weight:700; }
+  label { font-size:13px; color:var(--dim); display:block; margin:10px 0 4px; }
+  input[type=text], textarea { width:100%; background:#0d1828; color:var(--ink); border:1px solid #24405f; border-radius:8px; padding:9px; font-size:14px; }
+  .warn { background:#2a1215; border:1px solid var(--red); color:#ffb3b3; border-radius:10px; padding:10px 12px; font-size:13.5px; line-height:1.5; }
+  .real { background:#0e2a18; border:1px solid var(--green); color:#b2f2bb; border-radius:10px; padding:10px 12px; font-size:13.5px; line-height:1.5; }
+  .ok { color:var(--green); font-size:13.5px; }
+  .small { font-size:12.5px; color:var(--dim); line-height:1.55; }
+  .big { font-size:56px; font-weight:800; line-height:1; }
+  .count { font-size:28px; font-weight:800; }
+  .bar { height:8px; background:#0d1828; border-radius:99px; overflow:hidden; flex:1; }
+  .bar i { display:block; height:100%; background:var(--cyan); }
+  .sig { display:flex; gap:10px; align-items:center; font-size:13px; margin:5px 0; }
+  .sig b { width:170px; font-weight:600; color:var(--dim); }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:6px 7px; border-bottom:1px solid #1d3350; }
+  .verdict { font-size:17px; font-weight:700; }
+</style>
+</head>
+<body>
+<header>
+  <h1>TEN<span>SIVUE</span> — Test du jour</h1>
+  <div class="sub">La manche quotidienne qui entraîne le modèle — sur de <b>vrais humains</b>, en chair et en os.
+  Tu dis une affirmation, vraie ou fausse (ton choix secret), le moteur l'analyse, tu révèles la vérité,
+  puis tu donnes ton <b>feedback</b> : c'est ce retour qui améliore le modèle, nuit après nuit.
+  <a href="index.html">Analyse d'un clip</a> · <a href="live.html">Temps réel</a> · <a href="collect.html">Collecte étiquetée</a></div>
+</header>
+<main>
+  <div class="real"><b>Vrais humains seulement.</b> L'enregistrement se fait en direct devant ta caméra,
+  ou avec un clip réel d'une vraie personne. Les vidéos générées par IA, les animations et les avatars
+  n'ont ni visage réel ni signaux exploitables : la porte qualité les refuse, ils ne peuvent pas servir
+  à entraîner le modèle — et ce serait fausser les mesures.</div>
+
+  <div class="card">
+    <h2>État du modèle — la boucle quotidienne</h2>
+    <div class="row">
+      <div><span class="count" id="stClips">…</span><div class="small">clips étiquetés utilisables</div></div>
+      <div><span class="count" id="stWeights">…</span><div class="small">version des poids</div></div>
+      <div style="flex:1"><div class="small" id="stDecision">Lecture de l'état…</div>
+      <div class="small" id="stDate"></div></div>
+    </div>
+    <div class="small" style="margin-top:8px">Chaque nuit, la boucle rejoue les tests, re-mesure la précision sur les
+    données étiquetées et ne change les poids que si le test prouve un gain. Les manches jouées ici
+    (exportées en JSON) alimentent exactement cette boucle.</div>
+  </div>
+
+  <div class="card">
+    <h2>1 · La carte du jour</h2>
+    <div class="verdict" id="dailyCard">…</div>
+    <div class="small">Formule TON affirmation sur ce thème — vraie ou inventée, tu gardes le secret jusqu'à l'étape 3.
+    Tu peux aussi écrire une affirmation libre :</div>
+    <textarea id="claim" rows="2" placeholder="Ex. : « Dimanche passé, je suis allé marcher au bord du fleuve. »"></textarea>
+    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;color:var(--ink)">
+      <input type="checkbox" id="consent" style="margin-top:3px">
+      <span>Je consens à ce que cette manche étiquetée serve à entraîner et calibrer Tensivue
+      (révocable : supprimer la manche ci-dessous l'efface de cet appareil). Sans consentement, rien n'est conservé.</span>
+    </label>
+    <label>Ton pseudonyme (jamais ton nom réel)</label>
+    <input type="text" id="subject" placeholder="Ex. : joueur-007">
+  </div>
+
+  <div class="card">
+    <h2>2 · Enregistre ton affirmation</h2>
+    <div class="row">
+      <button id="btnCam" class="primary">📷 Ouvrir ma caméra et enregistrer</button>
+      <button id="btnStop" style="display:none">⏹ Arrêter</button>
+      <input type="file" id="file" accept="video/*">
+    </div>
+    <div style="height:10px"></div>
+    <video id="vid" controls playsinline></video>
+    <div class="small">Dis ton affirmation à voix haute, face caméra, 10 à 60 secondes. L'enregistrement reste sur
+    cet appareil ; seule l'analyse et ton feedback sont conservés dans l'entrée exportée.</div>
+  </div>
+
+  <div class="card">
+    <h2>3 · Déclare la vérité terrain (avant le verdict du moteur)</h2>
+    <div class="row">
+      <button class="truth" id="btnTruth">✓ C'était VRAI</button>
+      <button class="lie" id="btnLie">✗ C'était un MENSONGE</button>
+      <span class="small" id="lblState">Pas encore déclaré.</span>
+    </div>
+    <div style="height:10px"></div>
+    <button class="primary" id="btnAnalyze" disabled>Lancer l'analyse du moteur</button>
+    <span class="small" id="status"></span>
+    <div id="result" style="display:none;margin-top:14px">
+      <div class="row"><span class="big" id="rIndex">–</span>
+        <div><div class="small">indice de tension (5 à 95)<br>confiance du moteur : <b id="rConf">–</b></div>
+        <div class="verdict" id="rCall"></div></div>
+      </div>
+      <div id="rSignals" style="margin-top:10px"></div>
+      <div class="small" style="margin-top:8px">Indice de tension observable — <b>pas une preuve de mensonge</b>.
+      Analyse locale par le mouvement (la version serveur ajoute le pouls à distance rPPG).</div>
+    </div>
+  </div>
+
+  <div class="card" id="fbCard" style="display:none">
+    <h2>4 · Ton feedback — c'est lui qui améliore le modèle</h2>
+    <label>L'indice du moteur te semble…</label>
+    <div class="row">
+      <button data-fb="juste">👍 Juste</button>
+      <button data-fb="trop_haut">Trop haut</button>
+      <button data-fb="trop_bas">Trop bas</button>
+    </div>
+    <label>Un mot de plus ? (optionnel — ce qui t'a paru visible ou raté)</label>
+    <input type="text" id="fbComment" placeholder="Ex. : « je souriais parce que j'étais nerveux, pas parce que je mentais »">
+    <div class="row" style="margin-top:10px">
+      <button class="primary" id="btnSave">Enregistrer la manche</button>
+      <span class="ok" id="saved"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5 · Mes manches et l'export pour la boucle</h2>
+    <div class="row">
+      <div><span class="count" id="nTotal">0</span><div class="small">manches</div></div>
+      <div><span class="count" id="nHit">–</span><div class="small">le modèle a visé juste</div></div>
+      <div><span class="count" id="nFb">0</span><div class="small">feedbacks « juste »</div></div>
+      <div style="flex:1"></div>
+      <button class="primary" id="btnExport">⬇ Exporter (JSON)</button>
+      <button id="btnWipe">Tout effacer</button>
+    </div>
+    <div style="height:8px"></div>
+    <table><thead><tr><th>#</th><th>Vérité</th><th>Indice</th><th>Le modèle</th><th>Feedback</th><th></th></tr></thead>
+    <tbody id="rows"></tbody></table>
+    <div class="small" style="margin-top:10px">L'export a le même format que l'app de collecte : déposé dans
+    <i>data/labeled/</i> du dépôt, il est lu la nuit même par la boucle d'auto-amélioration, qui re-mesure
+    et re-règle les poids — avec la vérité terrain et ton feedback, jamais avec des vidéos d'IA.</div>
+  </div>
+</main>
+
+<script type="module">
+import { fuseSignals, repetitionScore, freezeScore, applyWeights } from "../../packages/scoring.js";
+
+const $ = (id) => document.getElementById(id);
+const LS = "tensivue_test_jour_v1";
+let data = [];
+try { data = JSON.parse(localStorage.getItem(LS) || "[]"); } catch (e) { data = []; }
+let label = null, fileName = "", analysis = null, feedback = null, threshold = 55, weightsVersion = "défauts";
+
+// --- État du modèle : la boucle quotidienne, visible sur le site ------------
+fetch("../../tools/last_run.json").then((r) => r.json()).then((j) => {
+  $("stClips").textContent = j.usable != null ? j.usable : "–";
+  $("stDecision").textContent = "Dernière décision de la boucle : " + (j.decision || "–");
+  $("stDate").textContent = "Dernier passage : " + (j.date || "–") + " · tests unitaires et régression rejoués chaque nuit.";
+}).catch(() => { $("stDecision").textContent = "État de la boucle indisponible hors ligne."; });
+fetch("../../packages/weights.json").then((r) => r.json()).then((j) => {
+  applyWeights(j);
+  threshold = Number.isFinite(j.threshold) ? j.threshold : 55;
+  weightsVersion = "v" + (j.version || 1);
+  $("stWeights").textContent = weightsVersion;
+}).catch(() => { $("stWeights").textContent = "défauts"; });
+
+// --- Carte du jour (déterministe selon la date) -------------------------------
+const CARDS = [
+  "Ton déjeuner d'hier — qu'as-tu mangé, où, avec qui ?",
+  "Ton dernier vol — la destination, la durée, un détail du voyage.",
+  "Ta première voiture — la marque, la couleur, comment tu l'as eue.",
+  "Dimanche passé — raconte ta journée, du matin au soir.",
+  "Un souvenir d'enfance à l'école — un événement précis.",
+  "Le café (ou le thé) de ce matin — où, quand, dans quelle tasse ?",
+  "La dernière personne que tu as appelée — qui, pourquoi, combien de temps ?",
+  "La dernière fête où tu es allé — où, avec qui, jusqu'à quelle heure ?"
+];
+const daySeed = Math.floor(Date.now() / 86400000);
+$("dailyCard").textContent = "🃏 " + CARDS[daySeed % CARDS.length];
+
+// --- Enregistrement ------------------------------------------------------------
+const vid = $("vid");
+let mediaRec = null, chunks = [];
+$("btnCam").addEventListener("click", async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    vid.srcObject = stream; vid.muted = true; await vid.play();
+    chunks = []; mediaRec = new MediaRecorder(stream);
+    mediaRec.ondataavailable = (e) => chunks.push(e.data);
+    mediaRec.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      vid.srcObject = null; vid.muted = false;
+      fileName = "test-jour-" + new Date().toISOString().replace(/[:.]/g, "-") + ".webm";
+      vid.src = URL.createObjectURL(new Blob(chunks, { type: "video/webm" }));
+      $("btnStop").style.display = "none";
+      maybeEnable();
+    };
+    mediaRec.start();
+    $("btnStop").style.display = "";
+  } catch (e) {
+    $("status").textContent = "Caméra refusée ou indisponible (" + e.name + ") — importe un clip réel à la place.";
+  }
+});
+$("btnStop").addEventListener("click", () => { if (mediaRec) mediaRec.stop(); });
+$("file").addEventListener("change", (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  fileName = f.name; vid.src = URL.createObjectURL(f); maybeEnable();
+});
+
+// --- Vérité terrain -------------------------------------------------------------
+const bT = $("btnTruth"), bL = $("btnLie");
+function setLabel(v) {
+  label = v;
+  bT.className = v === "verite" ? "sel-truth" : "truth";
+  bL.className = v === "mensonge" ? "sel-lie" : "lie";
+  $("lblState").textContent = v === "verite" ? "Déclaré : VÉRITÉ. Verrouillé avant l'analyse." : "Déclaré : MENSONGE. Verrouillé avant l'analyse.";
+  maybeEnable();
+}
+bT.onclick = () => setLabel("verite");
+bL.onclick = () => setLabel("mensonge");
+function maybeEnable() { $("btnAnalyze").disabled = !(fileName && label && vid.src); }
+
+// --- Analyse locale (même moteur que le reste du produit) -----------------------
+const thumb = document.createElement("canvas"); thumb.width = 64; thumb.height = 36;
+const tctx = thumb.getContext("2d", { willReadFrequently: true });
+let prevFrame = null;
+function frameMotion() {
+  tctx.drawImage(vid, 0, 0, 64, 36);
+  const d = tctx.getImageData(0, 0, 64, 36).data;
+  if (!prevFrame) { prevFrame = d; return 0; }
+  let diff = 0;
+  for (let i = 0; i < d.length; i += 16) diff += Math.abs(d[i] - prevFrame[i]);
+  prevFrame = d;
+  return diff / (64 * 36 / 4) / 255;
+}
+$("btnAnalyze").addEventListener("click", async () => {
+  if (!vid.duration || !isFinite(vid.duration)) { $("status").textContent = "Attends que le clip soit chargé."; return; }
+  $("btnAnalyze").disabled = true;
+  const series = []; prevFrame = null;
+  for (let t = 0; t < vid.duration; t += 0.5) {
+    vid.currentTime = t;
+    await new Promise((r) => vid.addEventListener("seeked", r, { once: true }));
+    series.push(frameMotion());
+    $("status").textContent = "Analyse… " + Math.round((t / vid.duration) * 100) + " %";
+  }
+  const mean = series.reduce((a, b) => a + b, 0) / Math.max(1, series.length);
+  const signals = {
+    headMovement: Math.min(1, mean * 6),
+    repetitiveMovement: repetitionScore(series),
+    freeze: freezeScore(series.slice(-80), 10),
+    blinkDeviation: null, gazeAversion: null, facialTension: null, pulseInstability: null
+  };
+  const fused = fuseSignals(signals, { faceVisibleRatio: 0.55, durationSec: vid.duration });
+  analysis = { index: fused.index, confidence: fused.confidence, signals: fused.signals, threshold, weightsVersion, engine: "local-mouvement" };
+  $("status").textContent = "Analyse terminée.";
+  $("rIndex").textContent = fused.index != null ? fused.index : "–";
+  $("rConf").textContent = Math.round(fused.confidence * 100) + " %";
+  const modelSaysLie = fused.index != null && fused.index >= threshold;
+  $("rCall").textContent = fused.index == null ? "Score refusé — pas assez de signal exploitable."
+    : (modelSaysLie ? "Le modèle lit : tension ÉLEVÉE" : "Le modèle lit : tension faible/modérée");
+  $("rSignals").innerHTML = Object.entries(fused.signals).map(([k, v]) =>
+    '<div class="sig"><b>' + k + '</b><div class="bar"><i style="width:' + v + '%"></i></div><span>' + v + "</span></div>").join("");
+  $("result").style.display = "";
+  $("fbCard").style.display = "";
+  $("btnAnalyze").disabled = false;
+});
+
+// --- Feedback usager --------------------------------------------------------------
+document.querySelectorAll("[data-fb]").forEach((b) => {
+  b.addEventListener("click", () => {
+    feedback = b.getAttribute("data-fb");
+    document.querySelectorAll("[data-fb]").forEach((x) => x.classList.remove("sel-fb"));
+    b.classList.add("sel-fb");
+  });
+});
+
+// --- Enregistrement de la manche ----------------------------------------------------
+function save() { localStorage.setItem(LS, JSON.stringify(data)); render(); }
+$("btnSave").addEventListener("click", () => {
+  if (!document.getElementById("consent").checked) { alert("Sans consentement coché, la manche n'est pas conservée."); return; }
+  if (!analysis) { alert("Lance l'analyse d'abord."); return; }
+  if (!feedback) { alert("Donne ton feedback : l'indice est-il juste, trop haut, trop bas ?"); return; }
+  const modelSaysLie = analysis.index != null && analysis.index >= analysis.threshold;
+  const truthIsLie = label === "mensonge";
+  data.push({
+    clip: fileName,
+    claim: $("claim").value.trim() || CARDS[daySeed % CARDS.length],
+    label, segment: { start_s: null, end_s: null }, signals_observed: [],
+    subject: $("subject").value.trim() || "anonyme", consent: true,
+    source: "test-du-jour", analysis,
+    model_call: analysis.index == null ? "abstention" : (modelSaysLie ? "tension_elevee" : "tension_faible"),
+    model_correct: analysis.index == null ? null : (modelSaysLie === truthIsLie),
+    feedback: { index_rating: feedback, comment: $("fbComment").value.trim() },
+    added_at: new Date().toISOString()
+  });
+  save();
+  $("saved").textContent = "✓ Manche enregistrée — merci, elle compte pour la boucle de cette nuit.";
+});
+
+// --- Liste, compteurs, export ---------------------------------------------------------
+function render() {
+  $("nTotal").textContent = data.length;
+  const judged = data.filter((d) => d.model_correct != null);
+  $("nHit").textContent = judged.length ? Math.round(100 * judged.filter((d) => d.model_correct).length / judged.length) + " %" : "–";
+  $("nFb").textContent = data.filter((d) => d.feedback && d.feedback.index_rating === "juste").length;
+  $("rows").innerHTML = data.map((d, i) =>
+    "<tr><td>" + (i + 1) + "</td><td>" + (d.label === "verite" ? "✓ vérité" : "✗ mensonge") + "</td><td>" +
+    (d.analysis ? d.analysis.index : "–") + "</td><td>" +
+    (d.model_correct == null ? "abstention" : d.model_correct ? "✓ juste" : "✗ raté") + "</td><td>" +
+    (d.feedback ? d.feedback.index_rating : "–") + '</td><td><button onclick="delEntry(' + i + ')">✕</button></td></tr>').join("");
+}
+window.delEntry = (i) => { data.splice(i, 1); save(); };
+$("btnWipe").addEventListener("click", () => { if (confirm("Effacer toutes tes manches de cet appareil ?")) { data = []; save(); } });
+$("btnExport").addEventListener("click", () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(
+    { dataset: "tensivue-jeu-etiquete", version: 2, exported_at: new Date().toISOString(), entries: data }, null, 2)],
+    { type: "application/json" }));
+  a.download = "tensivue-dataset-" + Date.now() + ".json"; a.click();
+});
+render();
+</script>
+</body>
+</html>

@@ -24,7 +24,12 @@ avec leur niveau de preuve réel, pas leur marketing).
 ### 2. Auto-réglage — nocturne (03 h, heure de Toronto)
 `tools/selftune.py` roule sans humain :
 1. Lit les données étiquetées consenties (`data/labeled/`, exports de
-   l'app de collecte et du Mode Jeu).
+   l'app de collecte et du **Test du jour** — `apps/web/test.html` : manche
+   quotidienne jouée devant la caméra par de vrais humains, vérité terrain
+   déclarée avant l'analyse, puis **feedback de l'usager** sur l'indice —
+   juste / trop haut / trop bas — conservé dans l'export et visible au
+   journal. Vidéos d'IA et animations exclues par construction : pas de
+   visage réel, pas de score, pas d'entraînement).
 2. Extrait les signaux avec le même pipeline que le service.
 3. Séparation **sujet-disjointe** entraînement/test (jamais de test sur
    une personne vue à l'entraînement).
