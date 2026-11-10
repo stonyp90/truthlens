@@ -527,6 +527,204 @@ programme de modernisation du polygraphe. Vérifié le 8 nov. 2026,
   sept. 2026) ; revendications 86–88 % inchangées, toujours sans
   validation indépendante.
 
+## 15. Veille — 9 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h.**
+Vérifié le 9 nov. 2026, 07h40 (heure de Toronto). Dernier papier
+humain-vidéo sur l'API arXiv : 2610.27407 (19 oct., jeu Avalon, texte
+seulement) ; le reste des dépôts récents concerne la déception des LLM
+(hors champ). Deux rattrapages et des confirmations.
+
+### 15.1 Revue de cadrage MDPI — aucune technologie ne suffit seule (21 oct. 2026)
+- « Deception Detection Technologies: Current Advances and Forensic
+  Challenges », MDPI *Forensic Sciences* (21 oct. 2026), revue de
+  cadrage PRISMA-ScR, **80 articles** (Scopus, PubMed, IEEE Xplore,
+  ScienceDirect, 20 dernières années), accord inter-juges κ = 0,925.
+- Conclusion des auteurs : **aucune technologie ne fournit à elle
+  seule une fiabilité suffisante pour servir de preuve forensique** ;
+  les approches multimodales rapportent les précisions les plus
+  élevées mais soulèvent des problèmes de gouvernance et
+  d'explicabilité. Cinq familles : polygraphie, EEG, IRMf, voix/visage/
+  mouvements, fusion multimodale IA.
+- La revue cite un système commercial « DecepTech AI » à **81,52 %**
+  — chiffre repris sans protocole vérifiable dans le texte consulté :
+  **prétention non établie**, même famille que les claims 85–94 %
+  du §9. Lecture : conforte notre positionnement « indice +
+  incertitude, jamais verdict » (§3, §12).
+
+### 15.2 MIDA — les MLLM s'effondrent en binaire, l'historique compte plus que les micro-expressions (EMNLP 2026)
+- MIDA (Univ. de Tokyo, accepté EMNLP 2026, arXiv:2511.16221, déjà
+  noté §13.5) : détails vérifiés le 9 nov. — sur les échantillons
+  exigeant un vrai jugement vrai/faux, la précision binaire de
+  **GPT-4o tombe à 27,6 %** (GPT-4o-mini 39,4 %), sous le hasard ;
+  les « identity claims » plafonnent à 15,7 % / 25,3 % en moyenne
+  tous modèles. Retirer l'historique de conversation fait chuter
+  GPT-4o-mini de 39,4 % à 13,4 % — **le contexte verbal compte
+  plus que les micro-expressions** ; ajouter des images n'aide
+  presque pas (1 image : +2,5 pts de F1 ; 3 images : +2,1 pts).
+- Lecture : renforce notre plan de fusion §11 (contenu verbal
+  vérifiable + entretien cognitif d'abord) et le statut exclu des
+  micro-expressions comme preuve. Aucun signal nouveau.
+
+### 15.3 Claim 95,4 % sur 121 clips — non établi (rattrapage, nov. 2024)
+- « Enhancing Lie Detection Accuracy » (arXiv:2411.08885, nov.
+  2024) : CNN Conv1D multimodal (ViT + OpenSMILE + gestes
+  transcrits) revendiquant **95,4 % de précision moyenne** sur
+  Real-Life Trial (**121 clips**), sans protocole sujet-disjoint
+  énoncé dans le texte consulté. Même patron que les claims
+  85–94 % du §9 : petit dataset, fuite de locuteur probable,
+  non répliqué. **Non établi** — ne change ni nos cibles ni
+  notre protocole.
+
+### 15.4 Pupille/regard — deux appuis, aucun changement de porte qualité
+- **Iacoviello (2026)** : analyse des fluctuations pupillaires,
+  du centre pupillaire et des clignements en tromperie simulée
+  (labo) — résultats « encourageants », **aucune métrique de
+  précision publiée** dans l'abstract. Appuie le candidat
+  pupille/regard, sans changer la porte qualité (visage ≥ 220 px).
+- **Foucher et al. (2026)** : suite de l'étude ETRA 2025 (§14.2)
+  — influence de la disposition des stimuli et de la présence
+  sociale sur les mouvements oculaires et clignements en CIT.
+  Même lecture : candidat confirmé, eye-tracker dédié, pas de
+  transposition webcam libre.
+
+### 15.5 rPPG — confirmations latérales, pas de rupture
+- **Yang et al., MRAC '26 (10–14 nov. 2026)** : détection de
+  deepfake par fusion co-attention rPPG + comportement facial
+  (AU, pose, regard), **92,8 % AUC** en face-swap, 96,78 % en
+  motion-transfer, sur manipulations de COHFACE/UBFC-rPPG.
+  Hors champ direct (authenticité, pas tromperie), mais confirme
+  que la rPPG porte un signal physiologique réel que les
+  manipulations perturbent — appui indirect à notre signal rPPG
+  actif (POS, §13.3). Aucun changement de pile.
+- **Verrier et al., npj Digital Medicine (7 nov. 2026)** : la PPG
+  au poignet encode l'information alimentaire (modèle de langage
+  sur 1,1 M de repas ; +11 % d'AUC sur un proxy d'apport
+  calorique) ; brevet provisoire déposé par Apple. PPG au
+  poignet, pas rPPG faciale, aucun lien avec la tromperie —
+  confirme seulement la maturité générale du signal PPG.
+
+### 15.6 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **9 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404**. Code annoncé mais non réutilisable
+  (§13.2, §14.4).
+
+### 15.7 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : infolettre d'oct. 2026 — nouveau
+  portail de formation (LMS) lancé début nov., correctif
+  EyeDetect 5.3 (erreur Windows) ; revendications 86–88 %
+  inchangées, toujours sans validation indépendante. Note :
+  **John Kircher** (co-fondateur scientifique, Univ. de l'Utah)
+  est décédé le **18 nov. 2025** à 74 ans — fait d'équipe, sans
+  effet sur les revendications du produit.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle
+  dans les dernières 48 h.
+
+### 15.8 Passé en revue sans trouvaille
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; sorties récentes = deepfake audio
+  (**VeriSpoof-Plus**, 4 nov. 2026, EER 2,14 % sur
+  Speech-DF-Arena — voix synthétique, hors champ) et détection
+  de prompt-injection (Galvanize 3, 31 oct. 2026).
+- GitHub : aucun dépôt pertinent nouveau ; les dépôts cités sont
+  des prototypes anciens (ex. Micro-Facial-Expression-Detection,
+  août 2025) ou hors champ (détection de fausses nouvelles vidéo,
+  PAGE/CIKM 2026).
+- Déception des LLM (hors champ) : « Looking Into The Past »
+  (arXiv:2610.27407, 19 oct. — contexte de jeu Avalon, +31 %
+  de précision LLM) ; FIBS v4 (20 oct., AUC 98,8 % sur
+  SHADE-Arena — sondes sur activations internes d'un modèle,
+  pas d'un humain) ; Machine Deception Detector
+  (arXiv:2610.15314, 11 oct.).
+
+## 16. Veille — 10 nov. 2026
+
+**Une ressource ouverte utilisable, pas de rupture de performance.**
+Vérifié le 10 nov. 2026, 07h40 (heure de Toronto). Dernier dépôt humain-vidéo
+sur l'API arXiv : 2611.12196 (9 nov.) ; le reste des dépôts récents concerne
+la déception des LLM (hors champ).
+
+### 16.1 The Deception Archive — 41 jeux de données verbales standardisés (9 nov. 2026)
+- Borgese, Loconte, Pfründer & Kleinberg, « The Deception Archive as a
+  repository of standardized datasets for large-scale verbal deception
+  detection research », arXiv:2611.12196 (9 nov. 2026, préprint non revu
+  par les pairs — mêmes auteurs que la méta-analyse du plafond 70–75 %,
+  §13.1).
+- Contenu : **41 datasets publics de tromperie verbale standardisés,
+  387 995 déclarations vérité/mensonge**, avec métadonnées (taille, sujet,
+  procédure de vérité-terrain) ; interface consultable en ligne
+  (https://deception-archive.net — vérifié en ligne le 10 nov. 2026) ;
+  données sous-jacentes déposées sur OSF sous **CC BY 4.0**
+  (https://osf.io/x5wpr). Revue systématique à la base ; 13 dossiers
+  exclus faute de documentation, 11 auteurs sur 82 contactés ont répondu.
+- Lecture pour Tensivue : **première ressource ouverte qui rend la
+  validation inter-corpus verbale réellement praticable** — c'est
+  exactement le protocole que notre cible exige (§12 : sujet-disjoint +
+  leave-one-dataset-out). Utile pour le module verbal de la phase 3
+  (Whisper + contenu vérifiable) : entraîner/valider les traits verbaux
+  sur plusieurs corpus au lieu d'un seul, et mesurer le plafond verbal
+  sur données standardisées. **Ne change ni nos cibles ni le plafond** :
+  c'est une ressource de données, pas un modèle ; la méta-analyse des
+  mêmes auteurs (§13.1) plafonne le verbal automatique à ~74 %.
+  Aucun signal nouveau à brancher ; à consigner comme source de données
+  pour la phase 3.
+
+### 16.2 GenLie — détection vidéo, rattrapage (ICASSP 2026)
+- Zhang et al., « GenLie: A Global-Enhanced Lie Detection Network under
+  Sparsity and Semantic Interference », arXiv:2603.16935 (14 mars 2026,
+  accepté ICASSP 2026, manqué par les veilles précédentes). Code annoncé :
+  github.com/AliasDictusZ1/GenLie (vérifié accessible le 10 nov. 2026).
+- Chiffres (table 1 du papier) : **MDPE 63,01 % ACC** (F1 38,97, AUC
+  59,91) ; **SEUMLD 64,17 % ACC** (F1 42,39, AUC 59,15) ;
+  **Real-Life Trial 93,39 % ACC** — ce dernier chiffre est obtenu en
+  leave-one-out sur **121 clips sans disjonction des sujets** : les
+  baselines comparées y atteignent aussi 85–93 % (MAD-Net 91,74 %,
+  FacialCueNet 93,39 %), ce qui trahit la fuite de locuteur, pas un
+  progrès — même patron que les claims 85–94 % non établis du §9.
+  **Non évalué sur DOLOS** : ne bat pas l'état de l'art SVC 2026
+  (71,35 %). Ses chiffres honnêtes (63–64 %) confirment le plafond
+  60–70 % (§9, §12). Aucun signal nouveau ; architecture à suivre
+  seulement si on réplique un jour (suppression du bruit d'identité
+  par supervision globale — idée compatible avec notre fusion).
+
+### 16.3 rPPG — généralisation cross-domaine (rattrapage, sept. 2026)
+- **FLOW** (arXiv:2609.38913, 30 sept. 2026) : transport optimal +
+  raffinement temporel pour rPPG généralisable entre domaines ;
+  revendique l'état de l'art cross-domaine sur quatre benchmarks rPPG.
+  Aucun lien avec la tromperie ; chiffres détaillés non vérifiés dans
+  l'abstract. Pertinent seulement comme piste future si notre signal
+  rPPG actif (POS, §13.3) montre des faiblesses en transfert
+  éclairage/mouvement — le POS classique reste notre choix par défaut.
+
+### 16.4 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **10 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404**. Code annoncé mais non réutilisable
+  (§13.2, §14.4, §15.6).
+
+### 16.5 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les dernières
+  48 h ; infolettre d'oct. 2026 déjà notée (§15.7, portail LMS début
+  nov.) ; revendications 86–88 % inchangées, toujours sans validation
+  indépendante. Une analyse indépendante (liedetectortest.com, mise à
+  jour il y a ~109 jours) rappelle que les 12 publications validant
+  l'ODT impliquent des chercheurs affiliés et qu'aucune étude
+  indépendante sans lien financier n'existe (constat du Policing
+  Project, NYU Law) — conforte notre lecture du §4/§11.
+
+### 16.6 Passé en revue sans trouvaille
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; les sorties récentes « deception » sont des
+  sondes sur la tromperie des LLM (ex. supremeDavid/gemma-4-E4B-
+  deception-cpt, 2 nov. 2026, 0 téléchargement) — hors champ.
+- GitHub : aucun dépôt pertinent nouveau ; créations récentes =
+  prototypes étudiants/hobby (AsimSafarli/deception-detection, 8 nov.),
+  détection de tromperie LLM (Pegi1727/Turkish-LLM-Deception-Detection,
+  10 nov.) ou cybersécurité (honeypots) — rien d'intégrable.
+- Micro-expressions : aucun papier récent ; le dernier dépôt pertinent
+  reste DeceptionX (juin 2026, déjà couvert §9/§12).
+- Déception des LLM (hors champ) : rien de nouveau dans les dernières
+  48 h au-delà des dépôts déjà listés (§15.8).
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
