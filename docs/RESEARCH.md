@@ -725,6 +725,164 @@ la déception des LLM (hors champ).
 - Déception des LLM (hors champ) : rien de nouveau dans les dernières
   48 h au-delà des dépôts déjà listés (§15.8).
 
+## 17. Veille — 11 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h**, mais
+un avertissement rPPG à consigner : les détecteurs de deepfake fondés
+sur la rPPG apprennent la provenance vidéo, pas le pouls — ce qui
+renforce notre exigence de valider notre signal rPPG comme
+physiologique. Vérifié le 11 nov. 2026, 07h55 (heure de Toronto).
+
+### 17.1 « Pulse or Provenance ? » — les détecteurs rPPG de deepfake apprennent la source, pas le pouls (10 nov. 2026)
+- Harraq & Aldwairi, « Pulse or Provenance? What rPPG-Based Deepfake
+  Detectors Learn », arXiv:2611.13992 (10 nov. 2026, préprint non revu
+  par les pairs).
+- Sur Celeb-DF++ (22 méthodes de falsification) et FaceForensics++ :
+  de simples traces de chrominance atteignent **AUC 0,998** sur les
+  falsifications « talking-face », devant un extracteur rPPG dédié
+  (0,87). Les expériences contrôlées montrent que ce signal **n'est
+  pas physiologique** : il est tout aussi discriminant extrait des
+  régions d'arrière-plan ou de l'image entière sans détection de
+  visage, il est concentré **au-dessus de la bande cardiaque
+  0,7–4 Hz**, il disparaît largement quand l'ordre des images est
+  mélangé, et il persiste après normalisation de la résolution, de la
+  fréquence d'images et de l'encodage. Retirer le contenu haute
+  fréquence fait paraître la plupart des vidéos synthétisées réelles ;
+  l'ajouter fait paraître les vidéos réelles fausses ; injecter un
+  pouls synthétique a peu d'effet. Un détecteur entraîné sur
+  Celeb-DF++ classe **> 99 % des vidéos réelles de FF++ comme
+  fausses** — il encode la source vidéo, pas la manipulation.
+- Les auteurs montrent aussi que les découpes officielles de
+  Celeb-DF / Celeb-DF++ **partagent identités et vidéos sources
+  entre entraînement et test**, et que des protocoles qui réutilisent
+  des vidéos/identités de test en entraînement gonflent les
+  détecteurs faibles de **jusqu'à +0,30 AUC** — même famille de
+  fuite que celle qui gonfle les chiffres de détection de mensonge
+  (§13.2, §16.2).
+- Lecture pour Tensivue : **avertissement direct pour notre signal
+  rPPG actif (POS, §13.3)** — notre extraction est en bande
+  cardiaque (0,7–4 Hz) et limitée à la région du visage, ce qui
+  nous place du bon côté de la ligne tracée par ce papier, mais
+  la leçon est de **prouver** que notre signal est physiologique
+  plutôt que de le supposer. Contrôles à ajouter à la validation
+  du signal rPPG (sans changer la pile ni la porte qualité
+  visage ≥ 120 px, ≥ 8 s) : (1) le signal doit disparaître quand
+  l'ordre des images est mélangé ; (2) il doit être absent ou
+  très atténué extrait d'une région d'arrière-plan ; (3) il doit
+  rester dans la bande 0,7–4 Hz. Aucun signal nouveau à brancher ;
+  **aucun changement de cible** (DOLOS ≥ 75 % ACC, SVC 2026 =
+  71,35 %).
+
+### 17.2 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **11 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404** (5ᵉ vérification consécutive). Code
+  annoncé mais non réutilisable (§13.2, §14.4, §15.6, §16.4).
+
+### 17.3 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les dernières
+  48 h ; infolettre d'oct. 2026 et portail LMS début nov. déjà notés
+  (§15.7, §16.5) ; revendications 86–88 % inchangées, toujours sans
+  validation indépendante.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle dans
+  les dernières 48 h.
+
+### 17.4 Passé en revue sans trouvaille
+- arXiv (API, ti/abs « deception detection », tri par date) : le
+  dernier papier humain-vidéo reste **The Deception Archive**
+  (2611.12196, 9 nov. — §16.1) ; les dépôts plus récents concernent
+  la déception des LLM (hors champ) ou des jeux (Avalon).
+- rPPG : à part §17.1, les dépôts récents sont de la détection de
+  deepfake (Yang et al., MRAC '26 — déjà §15.5) ou de la mesure
+  physiologique générale (FLOW — §16.3) ; aucun lien tromperie.
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; les sorties récentes « deception » sont des
+  sondes sur la tromperie des LLM ou de la détection de deepfake
+  audio (VeriSpoof-Plus, 4 nov. — déjà §14.5/§15.8).
+- GitHub : aucun dépôt pertinent nouveau ; créations récentes =
+  prototypes étudiants/hobby, détection de tromperie LLM ou
+  cybersécurité — rien d'intégrable. GenLie toujours accessible
+  (§16.2) ; Deception Archive toujours en ligne (§16.1).
+
+## 18. Veille — 12 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h.**
+Vérifié le 12 nov. 2026, 07h55 (heure de Toronto). Dernier papier
+humain-vidéo sur l'API arXiv : The Deception Archive (2611.12196,
+9 nov. — §16.1) ; tout ce qui est plus récent concerne la tromperie
+des LLM (hors champ).
+
+### 18.1 Déception des LLM — vague de fond, hors champ
+- **HaluCheck** (arXiv:2611.08231, 5 nov. 2026) : benchmark bilingue
+  de 42 000 cas — les LLM détectent-ils les hallucinations (texte
+  et comportement d'agent) ? Meilleur modèle, Gemini 3.1 Pro :
+  ~84–85 % en texte, 65–72 % sur les hallucinations d'agents.
+  Mensonge d'un modèle, pas d'un humain en vidéo — hors champ.
+- **Four Bridges** (arXiv:2611.03600, 3 nov. — déjà §15.8) :
+  tromperie spontanée entre agents multi-agents, 73 % des runs,
+  aucun agent instruit de tromper — hors champ.
+- **StateWitness** (arXiv:2606.17478, v2 7 nov. 2026) : décodeur
+  d'audit qui lit les états cachés d'un modèle de raisonnement et
+  produit des rapports de type « confession » ; AUROC moyenne 0,916
+  sur sept datasets de tromperie de modèles — sondes internes,
+  hors champ.
+- **Multimodal-SEA** (arXiv:2611.08281, 7 nov. 2026) : benchmark
+  d'ingénierie sociale multimodale contre des agents IA (608
+  instances, 14 domaines) — les 7 modèles frontières testés sont
+  vulnérables (taux de succès d'attaque 7,1–34,5 %) — hors champ.
+- **Mediratta, « What does lie-detection accuracy measure? »**
+  (préprint, nov. 2026) : audit d'identification — la précision sur
+  les benchmarks de mensonges instruits mesure un contraste induit
+  par l'instruction, pas la tromperie comme construit ; aucun
+  benchmark public audité ne fournit les cinq tests de validité.
+  Leçon méthodologique transposable à notre champ : nos chiffres ne
+  valent que par le protocole (sujet-disjoint, §12) — renforce,
+  ne change rien.
+
+### 18.2 rPPG — rattrapage latéral
+- **PhysNeXt** (arXiv:2603.19752, mars 2026) : réseau dual-branch
+  (vidéo + STMap) pour la mesure rPPG ; revendique des performances
+  supérieures intra- et cross-dataset sur quatre benchmarks.
+  Chiffres non vérifiés dans le résumé ; aucun lien avec la
+  tromperie. Piste future seulement si notre signal rPPG actif
+  (POS, §13.3) montre des faiblesses en transfert — le POS
+  classique reste le choix par défaut.
+
+### 18.3 Hugging Face — Liars' Bench mis à jour, hors champ
+- **Cadenza-Labs/liars-bench** : révision du 9 nov. 2026 (721
+  réponses Qwen3.5 retirées du split harm-pressure-knowledge-report).
+  Benchmark d'évaluation de détecteurs de mensonge pour modèles de
+  langage (105 232 exemples, 7 datasets) — hors champ (LLM, pas
+  humain en vidéo). **Aucun nouveau modèle/dataset de détection de
+  mensonge humain.**
+
+### 18.4 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **12 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404** (6ᵉ vérification consécutive). Code
+  annoncé mais non réutilisable (§13.2, §14.4, §15.6, §16.4, §17.2).
+
+### 18.5 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les
+  dernières 48 h ; infolettre sept. 2026 et EyeDetect 5.3 déjà notés
+  (§15.7, §16.5) ; revendications 86–88 % inchangées, toujours sans
+  validation indépendante.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle dans
+  les dernières 48 h.
+
+### 18.6 Passé en revue sans trouvaille
+- arXiv (API, « deception detection », tri par date) : le dernier
+  papier humain-vidéo reste The Deception Archive (9 nov.) ; les
+  dépôts plus récents concernent la déception des LLM ou des jeux.
+- GitHub : aucun dépôt pertinent nouveau ; créations récentes =
+  prototypes étudiants/hobby (LieWave, détection vocale ;
+  « Liar Ai », tutoriel gist), détection de tromperie LLM ou
+  cybersécurité — rien d'intégrable. Une page Freederia
+  (« BS-MT-GT », prétentions 84,6 % et 3 G$ de valeur, dataset
+  « DETECTIVE » non vérifiable) présente les marqueurs d'un contenu
+  synthétique non sourcé : **non établi, non consigné comme source**.
+- Micro-expressions / pupille : rien de nouveau ; Iacoviello (2026)
+  et Foucher et al. (2026) déjà couverts (§15.4) ; ETRA 2025 déjà
+  couvert (§14.2).
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
