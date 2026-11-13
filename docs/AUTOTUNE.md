@@ -65,3 +65,14 @@ Les témoins YouTube « parole » et « animation » sont remplacés par des fic
   - Animation (`tests/witnesses/animation-bbb-extract.ogv`) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage 27 %) — attendu.
   - Musique (YouTube dQw4w9WgXcQ) : **indice 55, confiance 0,62, tier « good », canScore vrai, 213 s, visage 44 %** — identique aux 8, 9, 10 et 11 nov.
 - Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
+
+## 2026-11-13 — exécution automatique
+- Fichiers de données : 0 ; entrées : 0 (sans consentement : 0, étiquette illisible : 0, clip introuvable : 0)
+- Clips analysables par le pipeline : 0
+- **Données insuffisantes pour régler les poids** (0 < 8 clips). La boucle reste en attente : les parties du Mode Jeu et les exports de l'app de collecte alimenteront data/labeled/. Aucun poids touché, aucun chiffre inventé.
+- Tests unitaires : 13/13 verts.
+- Régression (backend local, port 8000, témoins locaux) :
+  - Parole face caméra (`tests/witnesses/parole-obama-90s.mp4`) : **indice 24, confiance 0,87, visage 99 %, qualité excellente** — identique à la référence du 2026-11-09.
+  - Animation (`tests/witnesses/animation-bbb-extract.ogv`) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage 27 %) — attendu.
+  - Musique (YouTube dQw4w9WgXcQ) : **indice 55, confiance 0,62, tier « good », canScore vrai, 213 s, visage 44 %** — identique aux 8, 9, 10, 11 et 12 nov.
+- Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
