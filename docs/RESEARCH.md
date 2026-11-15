@@ -883,6 +883,123 @@ des LLM (hors champ).
   et Foucher et al. (2026) déjà couverts (§15.4) ; ETRA 2025 déjà
   couvert (§14.2).
 
+## 19. Veille — 13 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h.**
+Vérifié le 13 nov. 2026, 07h55 (heure de Toronto). Dernier papier
+humain-vidéo sur l'API arXiv : The Deception Archive (2611.12196,
+9 nov. — §16.1) ; tout ce qui est plus récent concerne la tromperie
+des LLM (hors champ) ou la cybersécurité.
+
+### 19.1 Authenticité vidéo — Pangram Image 1.0 / Image Flash 1.0 (rattrapage, 4 nov. 2026)
+- Pangram (détection de texte IA) a lancé le **4 nov. 2026** ses
+  modèles Image 1.0 (images fixes) et Image Flash 1.0 (vidéo,
+  analyse image par image, heatmap des zones synthétiques),
+  disponibles via web, API et extension Chrome ; vidéo à 0,05 $/s.
+- Chiffres **revendiqués par le vendeur, non vérifiés
+  indépendamment** : 99,2 % d'images IA détectées (0,27 % de faux
+  positifs) ; 98,7 % sur le benchmark DF26 (2 691 clips de
+  personnes parlant face caméra, préprint sept. 2026), soit +29 pts
+  devant le concurrent suivant. La démo du PDG a elle-même retourné
+  « incertain » sur deux images manifestement fausses.
+- Lecture pour Tensivue : **hors champ direct** (authenticité du
+  média, pas tromperie d'un humain) — mais pertinent en latéral :
+  notre Test du jour exclut déjà les vidéos d'IA par construction
+  (AUTONOMOUS_LOOP.md), et un détecteur d'authenticité tiers
+  pourrait un jour servir de pré-filtre à la collecte consentie.
+  Aucun signal de mensonge nouveau ; ne change ni nos cibles ni
+  notre protocole. À suivre seulement si une validation
+  indépendante paraît.
+
+### 19.2 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **13 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404** (7ᵉ vérification consécutive). Code
+  annoncé mais non réutilisable (§13.2, §14.4, §15.6, §16.4, §17.2,
+  §18.4).
+
+### 19.3 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les
+  dernières 48 h ; infolettre sept. 2026, EyeDetect 5.3 et portail
+  LMS déjà notés (§15.7, §16.5) ; revendications 86–88 %
+  inchangées, toujours sans validation indépendante. Une analyse
+  indépendante (liedetectortest.com, mise à jour il y a ~112 jours)
+  rappelle que les 12 publications validant l'ODT impliquent des
+  chercheurs affiliés et qu'aucune étude indépendante sans lien
+  financier n'existe — déjà consigné §16.5.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle dans
+  les dernières 48 h.
+
+### 19.4 Passé en revue sans trouvaille
+- arXiv (API, « deception detection », tri par date) : le dernier
+  papier humain-vidéo reste The Deception Archive (9 nov.) ; les
+  dépôts plus récents concernent la déception des LLM ou des jeux.
+- rPPG : le dernier dépôt reste « Pulse or Provenance ? »
+  (2611.13992, 10 nov. — §17.1) ; rien de nouveau.
+- Micro-expressions / pupillométrie : aucun dépôt pertinent
+  récent ; Iacoviello (2026) et ETRA 2025 déjà couverts (§15.4,
+  §14.2).
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; les sorties récentes « deception » sont des
+  sondes sur la tromperie des LLM (ex. supremeDavid/gemma-4-E4B-
+  deception-cpt, 2 nov. 2026, 0 téléchargement — déjà §16.6).
+- GitHub : aucun dépôt pertinent nouveau ; créations récentes =
+  cybersécurité (honeypots, « deception framework » — hors champ)
+  ou détection de tromperie LLM — rien d'intégrable.
+
+## 20. Veille — 14 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h.**
+Vérifié le 14 nov. 2026, 07h55 (heure de Toronto). Dernier papier
+humain-vidéo sur l'API arXiv : The Deception Archive (2611.12196,
+9 nov. — §16.1) ; tout ce qui est plus récent concerne la tromperie
+des LLM (hors champ), les jeux ou la cybersécurité.
+
+### 20.1 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **14 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404** (8ᵉ vérification consécutive). Code
+  annoncé mais non réutilisable (§13.2, §14.4, §15.6, §16.4, §17.2,
+  §18.4, §19.2).
+
+### 20.2 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les
+  dernières 48 h ; infolettre sept. 2026, EyeDetect 5.3 et portail
+  LMS déjà notés (§15.7, §16.5) ; revendications 86–88 %
+  inchangées, toujours sans validation indépendante. Les pages
+  d'analyse indépendante (liedetectortest.com) n'ont pas de
+  contenu nouveau — dernière mise à jour il y a ~111–113 jours.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle dans
+  les dernières 48 h.
+- **Pangram Image 1.0 / Image Flash 1.0** (4 nov., §19.1) : reprise
+  par la presse spécialisée les 5–6 nov. (WinBuzzer, Digital Trends,
+  Unite.ai) — mêmes chiffres revendiqués par le vendeur (99,2 %
+  images, 98,7 % sur DF26), toujours sans validation indépendante ;
+  hors champ direct (authenticité, pas tromperie humaine).
+
+### 20.3 Passé en revue sans trouvaille
+- arXiv (API, « deception detection » et « deception » large, tri par
+  date) : dépôts du 11–12 nov. hors champ (persuasion, vérification
+  de signatures PDF, visualisations propagandistes, tromperie
+  d'agents LLM). « lie detection » : dernier dépôt pertinent
+  30 sept. 2026 (stress-test de détecteurs de mensonge LLM —
+  hors champ) ; GenLie déjà couvert (§16.2). rPPG : dernier dépôt
+  « Pulse or Provenance ? » (10 nov. — §17.1). Micro-expressions +
+  tromperie : dernier dépôt DeceptionX (juin 2026 — §9/§12).
+  Pupillométrie + tromperie : aucun dépôt.
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; dernier modèle « deception » : sonde LLM
+  (2 nov. 2026 — déjà §16.6). Dataset **rtrip27/deception-
+  replication-train-set** (11 nov., 41 téléchargements) : aucune
+  description ni README récupérable via l'API — contenu non
+  vérifiable, nom compatible avec la réplication de tromperie LLM ;
+  **non consigné comme source**, à revérifier seulement si une
+  description paraît.
+- GitHub : dépôts créés depuis le 11 nov. = cybersécurité
+  (honeypots multi-agents, détection d'intrusion) ou hors champ
+  (plaques d'immatriculation, détection de chute) — rien
+  d'intégrable.
+- Micro-expressions / pupille : rien de nouveau ; Iacoviello (2026)
+  et ETRA 2025 déjà couverts (§15.4, §14.2).
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
