@@ -1000,6 +1000,86 @@ des LLM (hors champ), les jeux ou la cybersécurité.
 - Micro-expressions / pupille : rien de nouveau ; Iacoviello (2026)
   et ETRA 2025 déjà couverts (§15.4, §14.2).
 
+## 21. Veille — 15 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h**, mais
+un concurrent commercial direct rattrapé (manqué par les veilles
+précédentes) : LiarLiar.ai, même pile que la nôtre (rPPG +
+micro-expressions + voix), sans aucune preuve publiée.
+Vérifié le 15 nov. 2026, 07h55 (heure de Toronto).
+
+### 21.1 LiarLiar.ai / PolygrAI — concurrent direct, zéro preuve publiée (rattrapage)
+- LiarLiar.ai : outil commercial de détection de mensonge en vidéo,
+  en ligne depuis le **29 nov. 2023** (fiche Toolify) ; récemment
+  **rebaptisé PolygrAI** (fiche AI Tech Suite). Windows/Mac, bêta,
+  ~100 $ US achat unique (29,99–39,99 $ pour l'accès bêta à vie
+  selon les pages d'annuaires).
+- Pile annoncée : **rPPG** (fréquence cardiaque par caméra) +
+  micro-expressions + langage corporel + voix + transcription NLP en
+  temps réel, sur appels vidéo ou vidéos locales — c'est-à-dire
+  **exactement notre pile** (rPPG POS actif, MediaPipe phase 2,
+  Whisper phase 3).
+- **Aucun chiffre mesuré publié** : ni précision, ni dataset, ni
+  protocole, ni étude revue par les pairs — seulement la prétention
+  marketing « plus précis que le polygraphe traditionnel »
+  (saasgenius.com, toolify.ai). **Prétention non établie**,
+  même famille que les claims 85–94 % du §9.
+- Lecture pour Tensivue : le créneau produit (analyse consentie,
+  temps réel, sans capteur) attire des acteurs commerciaux — mais
+  aucun ne publie de preuve. Notre différenciateur reste le
+  protocole sujet-disjoint + l'incertitude affichée (§12) et le
+  positionnement indice, jamais verdict. Aucun signal nouveau à
+  brancher ; ne change ni nos cibles ni notre protocole.
+
+### 21.2 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **15 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404** (9ᵉ vérification consécutive). Code
+  annoncé mais non réutilisable (§13.2, §14.4, §15.6, §16.4, §17.2,
+  §18.4, §19.2, §20.1).
+
+### 21.3 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les
+  dernières 48 h ; infolettre oct. 2026 et portail LMS déjà notés
+  (§15.7, §16.5) ; revendications 86–88 % inchangées, toujours sans
+  validation indépendante. L'analyse indépendante
+  (liedetectortest.com) n'a pas de contenu nouveau — dernière mise à
+  jour il y a ~114 jours.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle dans
+  les dernières 48 h.
+
+### 21.4 Passé en revue sans trouvaille
+- arXiv (API, « deception detection », « lie detection » en titre,
+  tri par date) : le dernier papier humain-vidéo reste
+  The Deception Archive (2611.12196, 9 nov. — §16.1) ; les dépôts
+  plus récents concernent la déception des LLM (hors champ) ou des
+  jeux. Dernier dépôt « lie detection » en titre : GenLie
+  (14 mars 2026 — §16.2). Thermique + tromperie : aucun dépôt
+  pertinent. rPPG : dernier dépôt « Pulse or Provenance ? »
+  (10 nov. — §17.1). Micro-expressions + tromperie : dernier dépôt
+  DeceptionX (juin 2026 — §9/§12). Pupillométrie + tromperie :
+  aucun dépôt.
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; les sorties récentes « deception » sont des
+  sondes sur la tromperie des LLM (ex. supremeDavid/gemma-4-E4B-
+  deception-cpt, 2 nov. 2026 — déjà §16.6). Dataset
+  **rtrip27/deception-replication-train-set** (11 nov.) : toujours
+  sans description ni README ; seul fichier vérifiable :
+  fact_dataset.json — contenu non vérifiable, nom compatible avec
+  la réplication de tromperie LLM ; **non consigné comme source**.
+- GitHub : aucun dépôt pertinent nouveau ; les créations récentes
+  sont des détecteurs de chute (« lie » = allongé, faux positifs),
+  des honeypots de cybersécurité (DecoyShield) ou des simulations
+  d'espionnage — rien d'intégrable.
+- Déception des LLM (hors champ) : tournoi Blood on the
+  Clocktower — GPT-6 Astra premier sur 11 modèles frontières
+  (Elo 1859, 8 nov. 2026, Dwarkesh Patel) ; jeu de déduction
+  sociale entre modèles, pas un humain en vidéo. Une page wiki
+  (PRIMO.ai, rév. 9 nov.) consigne la réfutation scientifique de
+  la détection automatisée de mensonge et l'interdiction AI Act —
+  faits déjà à nos §3/§5, confirmation sans nouveauté.
+- Deception Archive (deception-archive.net) toujours en ligne
+  (HTTP 200, vérifié le 15 nov.).
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
