@@ -87,3 +87,14 @@ Les témoins YouTube « parole » et « animation » sont remplacés par des fic
   - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
   - Musique (dQw4w9WgXcQ, via /api/analyze-url) : indice **55**, confiance **0,62**, aucun refus (tier « good », canScore vrai, 213 s, visage visible 44 %). Identique aux 8 et 9 nov. Tel quel, comme attendu pour un témoin musique.
 - Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
+
+## 2026-11-15 — exécution automatique
+- Fichiers de données : 0 ; entrées : 0 (sans consentement : 0, étiquette illisible : 0, clip introuvable : 0)
+- Clips analysables par le pipeline : 0
+- **Données insuffisantes pour régler les poids** (0 < 8 clips). La boucle reste en attente : les parties du Mode Jeu et les exports de l'app de collecte alimenteront data/labeled/. Aucun poids touché, aucun chiffre inventé.
+- Tests unitaires : 13/13 verts.
+- Régression (backend local, port 8000) :
+  - Parole face caméra (fichier local parole-obama-90s.mp4) : indice **24**, confiance **0,87**, visage visible 99 %, tier « excellent », canScore vrai. Identique à la référence du 2026-11-09.
+  - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
+  - Musique (dQw4w9WgXcQ, via /api/analyze-url) : indice **55**, confiance **0,62**, aucun refus (tier « good », canScore vrai, 213 s, visage visible 44 %). Identique aux 8–14 nov. Première tentative sans réponse dans le délai client de 300 s (téléchargement + analyse d'une vidéo de 213 s : ~294 s au total) ; reprise avec un délai de 900 s, résultat complet.
+- Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
