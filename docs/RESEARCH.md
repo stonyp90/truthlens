@@ -1080,6 +1080,161 @@ Vérifié le 15 nov. 2026, 07h55 (heure de Toronto).
 - Deception Archive (deception-archive.net) toujours en ligne
   (HTTP 200, vérifié le 15 nov.).
 
+## 22. Veille — 16 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h**, mais
+un rattrapage : un modèle vocal ouvert de détection de tromperie,
+manqué par les veilles précédentes — chiffres modestes, non intégrable
+en l'état. Vérifié le 16 nov. 2026, 07h55 (heure de Toronto).
+
+### 22.1 TruSight — modèle vocal ouvert, 58,8 % en test retenu (rattrapage, 23 oct. 2026)
+- **sofi233/truesight-voice-deception** (Hugging Face, 23 oct. 2026,
+  licence MIT, 0 téléchargement au 16 nov.) : RandomForest
+  (n_estimators=200) sur **42 traits acoustiques** (pitch, jitter,
+  shimmer, tempo, pauses, spectral, MFCC) — librairies parselmouth /
+  librosa / scikit-learn ; poids `deception_model.pkl` téléchargeable.
+- Chiffres **auto-déclarés par l'auteur, non vérifiés** (model-index :
+  `verified: false`) : validation croisée 5 plis **64,31 % ± 7,5** ;
+  test retenu **58,82 % ACC / F1 0,5882 / AUC 0,6955**. Aucun papier,
+  aucun dataset nommé, aucun protocole sujet-disjoint énoncé.
+- Lecture pour Tensivue : **sous notre cible DOLOS ≥ 75 % ACC et sous
+  l'état de l'art SVC 2026 (71,35 %)** ; la liste de traits acoustiques
+  recoupe nos traits de prosodie prévus (phase 3), sans rien y ajouter.
+  **Non intégrable en l'état** — pas de provenance des données, pas de
+  disjonction des sujets, performance au niveau du plafond verbal
+  (§13.1) côté bas. À noter : l'auteur lui-même avertit que le modèle
+  « n'établit pas de détermination définitive » et que les accents
+  indiens / non natifs ne sont pas validés — honnêteté rare, à
+  saluer. Ne change ni nos cibles ni notre protocole.
+
+### 22.2 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **16 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404** (10ᵉ vérification consécutive). Code
+  annoncé mais non réutilisable (§13.2, §14.4, §15.6, §16.4, §17.2,
+  §18.4, §19.2, §20.1, §21.2).
+
+### 22.3 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les
+  dernières 48 h ; infolettre sept. 2026, EyeDetect 5.3 et portail
+  LMS déjà notés (§15.7, §16.5) ; revendications 86–88 %
+  inchangées, toujours sans validation indépendante. L'analyse
+  indépendante (liedetectortest.com) n'a pas de contenu nouveau —
+  dernière mise à jour il y a ~115 jours.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle dans
+  les dernières 48 h.
+
+### 22.4 Passé en revue sans trouvaille
+- arXiv (API, ti « deception detection » / « lie detection », tri par
+  date) : le dernier papier humain-vidéo reste The Deception Archive
+  (2611.12196, 9 nov. — §16.1) ; les dépôts plus récents concernent
+  la déception des LLM (hors champ) ou des jeux. rPPG : dernier dépôt
+  « Pulse or Provenance ? » (10 nov. — §17.1). Micro-expressions +
+  tromperie : dernier dépôt DeceptionX (juin 2026 — §9/§12).
+  Pupillométrie + tromperie : aucun dépôt. Thermique + tromperie :
+  aucun dépôt pertinent.
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** depuis le 4 nov. (sonde LLM
+  AlignmentResearch/synth-deception-probes — déjà §18.3, hors champ).
+  Dataset **rtrip27/deception-replication-train-set** (11 nov.) :
+  toujours un seul fichier `fact_dataset.json`, modalité texte,
+  42 téléchargements — réplication de tromperie LLM, **non consigné
+  comme source**.
+- GitHub : 3 dépôts créés depuis le 13 nov. sur « lie detection » —
+  tous des faux positifs (« lie » = plaque d'immatriculation
+  indienne, personne allongée après une chute, jeu de société) —
+  rien d'intégrable.
+- Deception Archive (deception-archive.net) toujours en ligne
+  (HTTP 200, vérifié le 16 nov.).
+
+## 23. Veille — 17 nov. 2026
+
+**Rien de nouveau qui change la donne dans les dernières 24–48 h**, mais
+un rattrapage rPPG : un modèle PhysNet pré-entraîné ouvert, utilisable
+comme brique alternative à notre POS. Vérifié le 17 nov. 2026, 07h55
+(heure de Toronto).
+
+### 23.1 rPPG-PhysNet — poids pré-entraînés ouverts, transfert UBFC → MCD (rattrapage, 27 oct. 2026)
+- **jakuzya/rppg-physnet** (Hugging Face, 27 oct. 2026, licence
+  Apache-2.0, 0 téléchargement au 17 nov.) : poids PhysNet
+  pré-entraînés sur UBFC-rPPG (42 sujets) puis fine-tunés sur
+  MCD-rPPG (540 sujets, webcam FullHD) ; prétraitement MediaPipe
+  Face Landmarker, fenêtres de 10 s à 30 Hz, estimation FC par FFT
+  en bande 0,5–3,5 Hz.
+- Chiffres **auto-déclarés par l'auteur, non revus par les pairs**
+  (README du modèle) : fine-tuné sur MCD-rPPG, Pearson 0,822 /
+  MAE FC 1,58 bpm (60 sujets de validation) ; sur un jeu privé
+  indépendant de 8 enregistrements, Pearson 0,9015 / MAE
+  0,463 bpm. Limite honnêtement documentée : après un effort
+  physique, la corrélation tombe à 0,4863 et l'erreur de FC monte
+  à 15,78 bpm.
+- Lecture pour Tensivue : **première brique rPPG apprise ouverte
+  avec des chiffres cross-dataset publiés** — une alternative
+  concrète à évaluer un jour contre notre POS classique (§13.3 :
+  POS reste devant en transfert, MAE 1,02 bpm sur UBFC
+  sujet-disjoint). Fenêtres de 10 s compatibles avec notre porte
+  qualité (visage ≥ 120 px, ≥ 8 s). **Aucun lien avec la
+  tromperie** : c'est un capteur de pouls, pas un détecteur de
+  mensonge ; ne change ni nos cibles ni notre protocole. À
+  consigner comme brique candidate à tester dans la validation du
+  signal rPPG (contrôles §17.1 : mélange des images, région
+  d'arrière-plan, bande 0,7–4 Hz).
+
+### 23.2 WhistleAI — dépôt toujours inaccessible
+- Revérifié le **17 nov. 2026** : github.com/WhistleAI/lie_detection_binary
+  retourne toujours **404** (11ᵉ vérification consécutive). Code
+  annoncé mais non réutilisable (§13.2, §14.4, §15.6, §16.4, §17.2,
+  §18.4, §19.2, §20.1, §21.2, §22.2).
+
+### 23.3 Déployé / commercial — rien de nouveau
+- **EyeDetect / Converus** : pas d'annonce nouvelle dans les
+  dernières 48 h ; infolettre oct. 2026 et portail LMS déjà notés
+  (§15.7, §16.5) ; revendications 86–88 % inchangées, toujours sans
+  validation indépendante. L'analyse indépendante
+  (liedetectortest.com) n'a pas de contenu nouveau — dernière mise à
+  jour il y a ~116 jours.
+- **Pentagone — Polygraph+** : les reprises des 8–10 nov. (MIT
+  Technology Review, brigatafolgore.net) ne font que relayer
+  l'article Defense News du 5 oct. 2026 déjà couvert (§14.1) : la
+  DCSA exclut IA générative, LLM, micro-expressions et voix de ses
+  travaux R&D actuels ; budget ~31 M$ US sur 5 ans toujours non
+  approuvé par le Congrès. Aucun développement nouveau.
+- **Polygraphe / CVSA / iBorderCtrl** : pas d'annonce nouvelle dans
+  les dernières 48 h (le « test polygraphe » du lancement
+  HealthRX.com, 12 nov., est un coup marketing, pas une
+  technologie).
+
+### 23.4 Passé en revue sans trouvaille
+- arXiv (API, « deception detection », « lie detection » en titre,
+  tri par date) : le dernier papier humain-vidéo reste The Deception
+  Archive (2611.12196, 9 nov. — §16.1) ; les dépôts du 11–16 nov.
+  concernent la déception des LLM ou des agents (ex. 2611.20459,
+  organismes modèles trompeurs ; 2611.20621, GPromptShield) — hors
+  champ. rPPG : dernier dépôt « Pulse or Provenance ? » (10 nov. —
+  §17.1). Micro-expressions + tromperie : dernier dépôt DeceptionX
+  (juin 2026 — §9/§12). Pupillométrie + tromperie : aucun dépôt.
+  Thermique + tromperie : aucun dépôt pertinent.
+- Hugging Face : **aucun nouveau modèle/dataset de détection de
+  mensonge humain** ; les sorties récentes « deception » restent des
+  sondes sur la tromperie des LLM (dernier modèle :
+  AlignmentResearch/synth-deception-probes, 4 nov. — déjà §18.3).
+  Dataset **rtrip27/deception-replication-train-set** (11 nov.) :
+  toujours un seul fichier `fact_dataset.json`, sans description,
+  42 téléchargements — réplication de tromperie LLM, **non consigné
+  comme source**.
+- GitHub : deux prototypes étudiants créés le 16 nov. —
+  **Parii15/AI-deception-detection** (Random Forest sur annotations
+  DOLOS, 54,48 % ACC / F1 0,5924, sous nos cibles, avec
+  l'avertissement honnête que ce n'est pas une performance validée
+  en conditions réelles) et **Ayeshakalra2006/Deception-Analysis-
+  Audio-Video** (analyse audio-vidéo multimodale, aucun chiffre
+  publié) — rien d'intégrable. Le reste : cybersécurité (honeypots,
+  DecoyShield), faux positifs « lie » (plaques, chutes) ou jeux.
+- Un rapport de marché (accio.com, 16 nov.) revendique 98–99 %
+  pour l'eye-tracking IA — contenu SEO non sourcé, sans protocole
+  ni dataset : **non établi, non consigné comme source**.
+- Deception Archive (deception-archive.net) toujours en ligne
+  (HTTP 200, vérifié le 17 nov.).
+
 ## 7. Sources principales
 
 - Converus/EyeDetect : liedetectortest.com (coûts et technologie EyeDetect)
