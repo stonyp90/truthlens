@@ -120,3 +120,36 @@ Les témoins YouTube « parole » et « animation » sont remplacés par des fic
   - Animation (`tests/witnesses/animation-bbb-extract.ogv`) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage 27 %) — attendu.
   - Musique (YouTube dQw4w9WgXcQ) : **indice 55, confiance 0,62, tier « good », canScore vrai, 213 s, visage 44 %** — identique aux 8, 9, 10, 11, 12 et 16 nov.
 - Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
+
+## 2026-11-18 — exécution automatique
+- Fichiers de données : 0 ; entrées : 0 (sans consentement : 0, étiquette illisible : 0, clip introuvable : 0)
+- Clips analysables par le pipeline : 0
+- **Données insuffisantes pour régler les poids** (0 < 8 clips). La boucle reste en attente : les parties du Mode Jeu et les exports de l'app de collecte alimenteront data/labeled/. Aucun poids touché, aucun chiffre inventé.
+- Tests unitaires : 13/13 verts.
+- Régression (backend local, port 8000) :
+  - Parole face caméra (fichier local parole-obama-90s.mp4) : indice **24**, confiance **0,87**, visage visible 99 %, tier « excellent », canScore vrai. Identique à la référence du 2026-11-09.
+  - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
+  - Musique (dQw4w9WgXcQ, via /api/analyze-url) : indice **55**, confiance **0,62**, aucun refus (tier « good », canScore vrai, 213 s, visage visible 44 %). Identique aux 8–17 nov.
+- Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
+
+## 2026-11-19 — exécution automatique
+- Fichiers de données : 0 ; entrées : 0 (sans consentement : 0, étiquette illisible : 0, clip introuvable : 0)
+- Clips analysables par le pipeline : 0
+- **Données insuffisantes pour régler les poids** (0 < 8 clips). La boucle reste en attente : les parties du Mode Jeu et les exports de l'app de collecte alimenteront data/labeled/. Aucun poids touché, aucun chiffre inventé.
+- Tests unitaires : 13/13 verts.
+- Régression (backend local, port 8000) :
+  - Parole face caméra (fichier local parole-obama-90s.mp4) : indice **24**, confiance **0,87**, visage visible 99 %, tier « excellent », canScore vrai. Identique à la référence du 2026-11-09.
+  - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
+  - Musique (dQw4w9WgXcQ, via /api/analyze-url) : indice **55**, confiance **0,62**, aucun refus (tier « good », canScore vrai, 213 s, visage visible 44 %). Identique aux 8–18 nov.
+- Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
+
+## 2026-11-20 — exécution automatique
+- Fichiers de données : 0 ; entrées : 0 (sans consentement : 0, étiquette illisible : 0, clip introuvable : 0)
+- Clips analysables par le pipeline : 0
+- **Données insuffisantes pour régler les poids** (0 < 8 clips). La boucle reste en attente : les parties du Mode Jeu et les exports de l'app de collecte alimenteront data/labeled/. Aucun poids touché, aucun chiffre inventé.
+- Tests unitaires : 13/13 verts.
+- Régression (backend local, port 8000) :
+  - Parole face caméra (fichier local parole-obama-90s.mp4) : indice **24**, confiance **0,87**, visage visible 99 %, tier « excellent », canScore vrai. Identique à la référence du 2026-11-09.
+  - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
+  - Musique (dQw4w9WgXcQ, via /api/analyze-url) : indice **55**, confiance **0,62**, aucun refus (tier « good », canScore vrai, 213 s, visage visible 44 %). Identique aux 8–19 nov.
+- Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
