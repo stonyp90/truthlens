@@ -174,3 +174,19 @@ Les témoins YouTube « parole » et « animation » sont remplacés par des fic
   - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
   - Musique (dQw4w9WgXcQ, via /api/analyze-url) : indice **55**, confiance **0,62**, aucun refus (tier « good », canScore vrai, 213 s, visage visible 44 %). Identique aux 8–21 nov.
 - Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
+
+## 2026-11-23 — exécution automatique
+- Fichiers de données : 0 ; entrées : 0 (sans consentement : 0, étiquette illisible : 0, clip introuvable : 0)
+- Clips analysables par le pipeline : 0
+- **Données insuffisantes pour régler les poids** (0 < 8 clips). La boucle reste en attente : les parties du Mode Jeu et les exports de l'app de collecte alimenteront data/labeled/. Aucun poids touché, aucun chiffre inventé.
+- Tests unitaires : 13/13 verts (avec `-p no:capture` — la capture pytest exige un répertoire temporaire, indisponible ce soir ; voir incident. Aucun échec de code).
+- Régression (pipeline exact du backend, rejoué en processus — HTTP bloqué, voir incident) :
+  - Parole face caméra (fichier local parole-obama-90s.mp4) : indice **24**, confiance **0,87**, visage visible 99 %, tier « excellent », canScore vrai. Identique à la référence du 2026-11-09.
+  - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
+  - Musique (dQw4w9WgXcQ, via /api/analyze-url) : **non rejouée** — téléchargement YouTube impossible : yt-dlp exige un répertoire temporaire, indisponible (voir incident). Dernière valeur mesurée : indice 55, confiance 0,62 (stable du 8 au 22 nov.), citée à titre d'historique, pas comme mesure du jour.
+- Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis.
+
+### Incident — panne d'écriture de la VM, 23 nov. 2026 (~01 h 31, toujours active à 03 h 40)
+- Les écritures par tout processus lancé du shell sont refusées (« Operation not permitted », fichiers créés à 0 octet) sur tous les systèmes de fichiers ; les outils fichiers directs écrivent normalement. Vérifié : `echo` et écriture Python vers /tmp et ~/workspace échouent ; `tempfile.gettempdir()` ne trouve aucun répertoire utilisable.
+- Conséquences sur cette passe : (1) `tools/selftune.py` a calculé son verdict (0 clip) puis s'est interrompu en journalisant — `Path.write_text` ouvre en troncature avant d'écrire, ce qui a **vidé docs/AUTOTUNE.md** ; le journal complet a été **restauré depuis la copie GitHub** (SHA d011e7174d1fbc6d0aa043e139415c5fab7efc7d, sections du 7 au 22 nov. 2026) et la section du jour ajoutée par outil fichier ; (2) pytest ne démarre pas avec sa capture par défaut (`TemporaryFile`) — les 13 tests passent avec `-p no:capture` ; (3) POST /api/analyze échoue au parsing multipart (« There was an error parsing the body », /health OK) — la régression des deux témoins locaux a donc été rejouée **en processus** via `_report_from_path`, exactement le code de l'endpoint ; (4) le témoin musique n'a pas pu être rejoué (ni sur la VM, ni sur le Mac — aucun dépôt truthlens sur le Mac, vérifié par SSH).
+- Correctif à apporter à selftune.py (quand les écritures reviendront) : journaliser sans tronquer d'abord (écrire vers un fichier temporaire puis renommer, ou ajouter avant d'écrire) pour que la panne ne puisse plus vider le journal.
