@@ -223,3 +223,18 @@ Les témoins YouTube « parole » et « animation » sont remplacés par des fic
 - Premier essai du témoin musique : échec TLS yt-dlp (« self-signed certificate in certificate chain »), HTTP 422 « Lien illisible ou vidéo indisponible ». Cause : le CA d'egress « Hatch Sandbox Egress CA » a tourné — le bundle `/run/hatch/egress-tls/ca-bundle.pem` a été régénéré le 25 nov. 07 h 00 (nouvelle empreinte SHA256 B6:0D:FD:D5…E2:EE) ; le `cacert.pem` du venv contenait encore l'ancien CA (empreinte 52:52:16:D2…92:6D, ajouté le 24 nov.), plus ses 121 certificats en double (234 blocs pour 121 uniques — le correctif du 24 nov. avait ajouté tout le bundle d'egress au fichier certifi).
 - Correctif appliqué : le CA actuel a été extrait du bundle d'egress et ajouté au `cacert.pem` du venv, **vérifié par empreinte SHA256** (présent, 235 blocs). yt-dlp en CLI a ensuite titré la vidéo normalement, et le témoin musique a rejoué (indice 55, confiance 0,63).
 - Leçon pour les prochaines passes : le CA d'egress peut tourner à chaque redémarrage de VM — si le témoin musique échoue en TLS, comparer l'empreinte du CA « Hatch Sandbox Egress CA » du bundle `/run/hatch/egress-tls/ca-bundle.pem` avec celle présente dans `.venv/lib/python3.12/site-packages/certifi/cacert.pem`, et ajouter le CA actuel (vérification par empreinte, pas par comparaison de blocs, les doublons faussent le comptage).
+
+## 2026-11-26 — exécution automatique
+- Fichiers de données : 0 ; entrées : 0 (sans consentement : 0, étiquette illisible : 0, clip introuvable : 0)
+- Clips analysables par le pipeline : 0
+- **Données insuffisantes pour régler les poids** (0 < 8 clips). La boucle reste en attente : les parties du Mode Jeu et les exports de l'app de collecte alimenteront data/labeled/. Aucun poids touché, aucun chiffre inventé.
+- Régression (backend local, port 8000) :
+  - Parole face caméra (fichier local parole-obama-90s.mp4) : indice **24**, confiance **0,87**, visage visible 99 %, tier « excellent », canScore vrai. Identique à la référence du 2026-11-09.
+  - Animation (fichier local animation-bbb-extract.ogv) : **refus de la porte qualité** (canScore=false, tier « insufficient », visage visible 27 %, indice/confiance null). Refus attendu, vérifié.
+  - Musique (dQw4w9WgXcQ, via /api/analyze-url) : indice **55**, confiance **0,63**, aucun refus (tier « good », canScore vrai, 213 s, visage visible 45 %). Identique à l'historique du 8 au 24 nov. (indice 55, confiance 0,62–0,63).
+- Poids conservés (données insuffisantes : 0 clip utilisable) ; aucun redémarrage de serveur requis (weights.json inchangé, version 1 du 2026-11-07).
+
+### Incident — CA d'egress tourné de nouveau, témoin musique bloqué puis réparé (26 nov. 2026, ~03 h 45)
+- Premier essai du témoin musique : échec TLS yt-dlp (« self-signed certificate in certificate chain »), HTTP 422 « Lien illisible ou vidéo indisponible ». Même cause que le 25 nov. : le CA d'egress « Hatch Sandbox Egress CA » a tourné — nouvelle empreinte SHA256 5dc2ef9e…76b82 (remplace B6:0D:FD:D5…E2:EE du 25 nov.) ; c'était le seul des 121 certificats du bundle `/run/hatch/egress-tls/ca-bundle.pem` absent du `cacert.pem` du venv.
+- Correctif appliqué (même procédure que le 25 nov.) : le CA actuel a été ajouté au `cacert.pem` du venv, **vérifié par empreinte SHA256** (présent, 236 blocs). Le témoin musique a ensuite rejoué normalement (indice 55, confiance 0,63).
+- Leçon confirmée : le CA d'egress tourne à chaque redémarrage de VM — la vérification d'empreinte fait partie de la passe de régression tant que le témoin musique passe par YouTube.
